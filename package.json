@@ -15,9 +15,11 @@
     "url": "https://github.com/johannschopplich/pdfjs-serverless/issues"
   },
   "keywords": [
+    "nodeless",
+    "parse",
     "pdf",
     "pdfjs-dist",
-    "parse",
+    "serverless",
     "workers"
   ],
   "sideEffects": false,
@@ -32,13 +34,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "rollup -c rollup.config.js",
+    "build": "rollup -c rollup.config.js && cp -R node_modules/pdfjs-dist/types dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "bumpp --commit --push --tag"
-  },
-  "peerDependencies": {
-    "pdfjs-dist": "^3.9.179"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",

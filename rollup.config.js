@@ -6,6 +6,7 @@ import nodeResolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import inject from '@rollup/plugin-inject'
 import * as unenv from 'unenv'
+import { canvas } from './src/mock/canvas.js'
 
 const env = unenv.env(unenv.nodeless)
 
@@ -40,13 +41,7 @@ export default defineConfig({
         // Inline the worker source
         'eval("require")(this.workerSrc)': 'require("pdfjs-dist/build/pdf.worker.js")',
         // TODO: Can we polyfill the canvas module?
-        'require("canvas")': `
-new Proxy({}, {
-  get(target, prop) {
-    return () => undefined
-  }
-})
-`.trimStart(),
+        'require("canvas")': canvas,
       },
     }),
     alias({
@@ -66,7 +61,7 @@ new Proxy({}, {
       async writeBundle() {
         await writeFile(
           'dist/index.d.ts',
-          'export * from \'pdfjs-dist/types/src/pdf.d.ts\'\n',
+          'export * from \'./types/src/pdf.d.ts\'\n',
           'utf-8',
         )
       },

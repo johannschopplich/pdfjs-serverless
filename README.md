@@ -8,7 +8,7 @@ A nodeless/serverless redistribution of Mozilla's [PDF.js](https://github.com/mo
 
 ## How It Works
 
-First, some string replacements of the `pdf.js` library is necessary, i.e. removing browser context references. Additionally, we enforce Node.js (might sound paradox at first, bear with me) compatibility, i.e. polyfilling the `canvas` module and setting the `isNodeJS` flag to `true`.
+First, some string replacements of the `pdf.js` library is necessary, i.e. removing browser context references. Additionally, we enforce Node.js (might sound paradox at first, bear with me) compatibility, i.e. mocking the `canvas` module and setting the `isNodeJS` flag to `true`.
 
 To achieve a nodeless build, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic.
 
@@ -29,7 +29,7 @@ npm install pdfjs-serverless
 yarn add pdfjs-serverless
 ```
 
-## Usage
+## Example Usage
 
 ### Deno
 
@@ -40,6 +40,13 @@ const data = Deno.readFileSync('./dummy.pdf')
 const doc = await getDocument(data).promise
 
 console.log(await doc.getMetadata())
+
+for (let i = 1; i <= doc.numPages; i++) {
+  const page = await doc.getPage(i)
+  const textContent = await page.getTextContent()
+  const contents = textContent.items.map(item => item.str).join(' ')
+  console.log(contents)
+}
 ```
 
 ### In Combination With `unpdf`
