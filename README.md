@@ -4,7 +4,7 @@
 >
 > Work in progress.
 
-A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless enviroments, like Deno Deploy and Cloudflare Workers.
+A nodeless/serverless redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless enviroments, like Deno Deploy and Cloudflare Workers.
 
 ## How It Works
 
@@ -68,7 +68,7 @@ const { totalPages, text } = await extractPDFText(
 
 ## Inspiration
 
-- [`pdf.mjs`](https://github.com/bru02/pdf.mjs)
+- [`pdf.mjs`](https://github.com/bru02/pdf.mjs), a nodeless build of PDF.js v2.
 
 ## License
 
