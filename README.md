@@ -8,9 +8,11 @@ A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for se
 
 ## How It Works
 
-To achieve the custom library build, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform agnostic.
+First, some string replacements of the `pdf.js` library is necessary, i.e. removing browser context references. Additionally, we enforce Node.js (might sound paradox at first, bear with me) compatibility, i.e. polyfilling the `canvas` module and setting the `isNodeJS` flag to `true`.
 
-Some necessary string replacements are done to make the library work in a serverless environment. See the [`rollup.config.js`](./rollup.config.js) file for more information.
+To achieve a nodeless build, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic.
+
+See the [`rollup.config.js`](./rollup.config.js) file for more information.
 
 ## Installation
 
