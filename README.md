@@ -1,10 +1,6 @@
 # pdfjs-serverless
 
-> **Note**
->
-> Work in progress.
-
-A nodeless/serverless redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless enviroments, like Deno Deploy and Cloudflare Workers.
+A nodeless/serverless redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless enviroments, like Deno Deploy and Cloudflare Workers with zero dependencies.
 
 ## How It Works
 
