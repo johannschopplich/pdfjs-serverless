@@ -1,4 +1,3 @@
-import { writeFile } from 'node:fs/promises'
 import { defineConfig } from 'rollup'
 import alias from '@rollup/plugin-alias'
 import replace from '@rollup/plugin-replace'
@@ -6,6 +5,8 @@ import nodeResolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import inject from '@rollup/plugin-inject'
 import * as unenv from 'unenv'
+import { resolveAliases } from './src/rollup/utils'
+import { typesPlugin } from './src/rollup/plugins'
 
 const env = unenv.env(unenv.nodeless)
 
@@ -22,8 +23,6 @@ export default defineConfig({
       constBindings: true,
     },
     sourcemap: false,
-    sourcemapExcludeSources: true,
-    sourcemapIgnoreList: relativePath => relativePath.includes('node_modules'),
   },
   external: env.external,
   plugins: [
@@ -57,36 +56,7 @@ export default defineConfig({
       requireReturnsDefault: 'auto',
     }),
     inject(env.inject),
-    // Create `index.d.ts` file
-    {
-      name: 'pdfjs-serverless:types',
-      async writeBundle() {
-        await writeFile(
-          'dist/index.d.ts',
-          'export * from \'./types/src/pdf.d.ts\'\n',
-          'utf-8',
-        )
-      },
-    },
+    // Create PDF.js types
+    typesPlugin(),
   ],
 })
-
-function resolveAliases(_aliases: Record<string, string>) {
-  // Sort aliases from specific to general (ie. fs/promises before fs)
-  const aliases = Object.fromEntries(
-    Object.entries(_aliases).sort(
-      ([a], [b]) =>
-        b.split('/').length - a.split('/').length || b.length - a.length,
-    ),
-  )
-
-  // Resolve alias values in relation to each other
-  for (const key in aliases) {
-    for (const alias in aliases) {
-      if (aliases[key].startsWith(alias))
-        aliases[key] = aliases[alias] + aliases[key].slice(alias.length)
-    }
-  }
-
-  return aliases
-}
