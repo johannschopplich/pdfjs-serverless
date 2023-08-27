@@ -47,10 +47,7 @@ export default defineConfig({
         ...env.alias,
       }),
     }),
-    nodeResolve({
-      // `module` is intentionally not supported because of externals
-      mainFields: ['main'],
-    }),
+    nodeResolve(),
     commonjs({
       esmExternals: id => !id.startsWith('unenv/'),
       requireReturnsDefault: 'auto',
