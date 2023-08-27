@@ -6,7 +6,6 @@ import nodeResolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import inject from '@rollup/plugin-inject'
 import * as unenv from 'unenv'
-import { canvas } from './src/mock/canvas.js'
 
 const env = unenv.env(unenv.nodeless)
 
@@ -37,16 +36,17 @@ export default defineConfig({
         'typeof document': '"undefined"',
         // Imitate the Node.js environment, unenv will take care of the rest
         'exports.isNodeJS = isNodeJS': 'exports.isNodeJS = true',
-        // Replace the `isNodeJS` check with a constant to tree-shake some code
+        // Replace the `isNodeJS` check to tree-shake some code
         '_util.isNodeJS': 'true',
         // Inline the PDF.js worker
         'eval("require")(this.workerSrc)': 'require("pdfjs-dist/build/pdf.worker.js")',
-        // TODO: Can we polyfill the canvas module?
-        'require("canvas")': canvas,
       },
     }),
     alias({
-      entries: resolveAliases({ ...env.alias }),
+      entries: resolveAliases({
+        canvas: 'src/mock/canvas.mjs',
+        ...env.alias,
+      }),
     }),
     nodeResolve({
       // `module` is intentionally not supported because of externals
@@ -57,8 +57,9 @@ export default defineConfig({
       requireReturnsDefault: 'auto',
     }),
     inject(env.inject),
+    // Create `index.d.ts` file
     {
-      name: 'pdfjs:typings',
+      name: 'pdfjs-serverless:types',
       async writeBundle() {
         await writeFile(
           'dist/index.d.ts',
@@ -70,7 +71,7 @@ export default defineConfig({
   ],
 })
 
-function resolveAliases(_aliases) {
+function resolveAliases(_aliases: Record<string, string>) {
   // Sort aliases from specific to general (ie. fs/promises before fs)
   const aliases = Object.fromEntries(
     Object.entries(_aliases).sort(
