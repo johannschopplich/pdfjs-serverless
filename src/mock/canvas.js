@@ -1,7 +1,7 @@
 export const canvas = `
 new Proxy({}, {
   get(target, prop) {
-    return () {
+    return () => {
       throw new Error(\`\${prop} is not implemented\`)
     }
   }

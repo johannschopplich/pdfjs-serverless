@@ -33,12 +33,13 @@ export default defineConfig({
       preventAssignment: true,
       values: {
         // Remove all references to the DOM
-        'typeof process': '"undefined"',
         'typeof window': '"undefined"',
         'typeof document': '"undefined"',
         // Imitate the Node.js environment, unenv will take care of the rest
+        'exports.isNodeJS = isNodeJS': 'exports.isNodeJS = true',
+        // Replace the `isNodeJS` check with a constant to tree-shake some code
         '_util.isNodeJS': 'true',
-        // Inline the worker source
+        // Inline the PDF.js worker
         'eval("require")(this.workerSrc)': 'require("pdfjs-dist/build/pdf.worker.js")',
         // TODO: Can we polyfill the canvas module?
         'require("canvas")': canvas,
