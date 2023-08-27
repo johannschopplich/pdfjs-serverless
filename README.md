@@ -8,7 +8,7 @@ First, some string replacements of the `pdf.js` library is necessary, i.e. remov
 
 To achieve a nodeless build, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic.
 
-See the [`rollup.config.js`](./rollup.config.js) file for more information.
+See the [`rollup.config.ts`](./rollup.config.ts) file for more information.
 
 ## Installation
 
