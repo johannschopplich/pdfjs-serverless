@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises'
 import type { Plugin } from 'rollup'
 
-export function typesPlugin(): Plugin {
+export function pdfjsTypes(): Plugin {
   return {
     name: 'pdfjs-serverless:types',
     async writeBundle() {

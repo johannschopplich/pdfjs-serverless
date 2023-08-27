@@ -6,7 +6,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import inject from '@rollup/plugin-inject'
 import * as unenv from 'unenv'
 import { resolveAliases } from './src/rollup/utils'
-import { typesPlugin } from './src/rollup/plugins'
+import { pdfjsTypes } from './src/rollup/plugins'
 
 const env = unenv.env(unenv.nodeless)
 
@@ -56,7 +56,6 @@ export default defineConfig({
       requireReturnsDefault: 'auto',
     }),
     inject(env.inject),
-    // Create PDF.js types
-    typesPlugin(),
+    pdfjsTypes(),
   ],
 })
