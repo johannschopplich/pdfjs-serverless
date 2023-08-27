@@ -15,7 +15,7 @@ export default defineConfig({
   output: {
     file: 'dist/index.mjs',
     format: 'esm',
-    exports: 'named',
+    // exports: 'named',
     intro: '',
     outro: '',
     inlineDynamicImports: true,
@@ -38,7 +38,10 @@ export default defineConfig({
         // Replace the `isNodeJS` check to tree-shake some code
         '_util.isNodeJS': 'true',
         // Inline the PDF.js worker
+        'GlobalWorkerOptions.workerSrc = ""': 'GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.js")',
         'eval("require")(this.workerSrc)': 'require("pdfjs-dist/build/pdf.worker.js")',
+        // Tree-shake client worker initialization logic
+        '!PDFWorkerUtil.isWorkerDisabled && !PDFWorker._mainThreadWorkerMessageHandler': 'false',
       },
     }),
     alias({
