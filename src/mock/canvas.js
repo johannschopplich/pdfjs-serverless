@@ -1,7 +1,9 @@
 export const canvas = `
 new Proxy({}, {
   get(target, prop) {
-    return () => undefined
+    return () {
+      throw new Error(\`\${prop} is not implemented\`)
+    }
   }
 })
 `.trimStart()
