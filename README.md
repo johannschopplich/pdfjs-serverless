@@ -4,7 +4,7 @@ A nodeless/serverless redistribution of Mozilla's [PDF.js](https://github.com/mo
 
 ## How It Works
 
-First, some string replacements of the `pdf.js` library is necessary, i.e. removing browser context references. Additionally, we enforce Node.js (might sound paradox at first, bear with me) compatibility, i.e. mocking the `canvas` module and setting the `isNodeJS` flag to `true`.
+First, some string replacements of the `PDF.js` library is necessary, i.e. removing browser context references. Additionally, we enforce Node.js (might sound paradox at first, bear with me) compatibility, i.e. mocking the `canvas` module and setting the `isNodeJS` flag to `true`.
 
 To achieve a nodeless build, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic.
 
