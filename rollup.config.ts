@@ -34,7 +34,7 @@ export default defineConfig({
         'typeof window': '"undefined"',
         'typeof document': '"undefined"',
         // Imitate the Node.js environment, unenv will take care of the rest
-        'exports.isNodeJS = isNodeJS': 'exports.isNodeJS = true',
+        'const isNodeJS = typeof': 'const isNodeJS = true // typeof',
         // Replace the `isNodeJS` check to tree-shake some code
         '_util.isNodeJS': 'true',
         // Inline the PDF.js worker
