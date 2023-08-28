@@ -4,6 +4,7 @@ import replace from '@rollup/plugin-replace'
 import nodeResolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import inject from '@rollup/plugin-inject'
+import terser from '@rollup/plugin-terser'
 import * as unenv from 'unenv'
 import { resolveAliases } from './src/rollup/utils'
 import { pdfjsTypes } from './src/rollup/plugins'
@@ -57,5 +58,14 @@ export default defineConfig({
     }),
     inject(env.inject),
     pdfjsTypes(),
+    terser({
+      mangle: {
+        keep_fnames: true,
+        keep_classnames: true,
+      },
+      format: {
+        comments: false,
+      },
+    }),
   ],
 })

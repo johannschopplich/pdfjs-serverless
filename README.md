@@ -1,6 +1,6 @@
 # pdfjs-serverless
 
-A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments, like Deno Deploy and Cloudflare Workers with zero dependencies. All named exports of the `PDF.js` library are available.
+A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments, like Deno Deploy and Cloudflare Workers with zero dependencies. All named exports of the `PDF.js` library are available at roughly 1.4 MB (minified).
 
 ## Installation
 
@@ -34,7 +34,7 @@ See the [`rollup.config.ts`](./rollup.config.ts) file for more information.
 ```ts
 import { getDocument } from 'https://esm.sh/pdfjs-serverless'
 
-const data = Deno.readFileSync('./dummy.pdf')
+const data = Deno.readFileSync('dummy.pdf')
 const doc = await getDocument(data).promise
 
 console.log(await doc.getMetadata())
