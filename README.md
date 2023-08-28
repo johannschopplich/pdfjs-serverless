@@ -1,14 +1,6 @@
 # pdfjs-serverless
 
-A nodeless/serverless redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless enviroments, like Deno Deploy and Cloudflare Workers with zero dependencies.
-
-## How It Works
-
-First, some string replacements of the `PDF.js` library is necessary, i.e. removing browser context references. Additionally, we enforce Node.js compatibility (might sound paradox at first, bear with me), i.e. mocking the `canvas` module and setting the `isNodeJS` flag to `true`.
-
-To achieve a nodeless build, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic.
-
-See the [`rollup.config.ts`](./rollup.config.ts) file for more information.
+A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments, like Deno Deploy and Cloudflare Workers with zero dependencies. All named exports of the `PDF.js` library are available.
 
 ## Installation
 
@@ -24,6 +16,16 @@ npm install pdfjs-serverless
 # yarn
 yarn add pdfjs-serverless
 ```
+
+## How It Works
+
+First, some string replacements of the `PDF.js` library is necessary, i.e. removing browser context references and checks like `typeof window`. Additionally, we enforce Node.js compatibility (might sound paradox at first, bear with me), i.e. mocking the `canvas` module and setting the `isNodeJS` flag to `true`.
+
+PDF.js uses a worker to parse and work with PDF documents. This worker is a separate file that is loaded by the main library. For the serverless build, we need to inline the worker code into the main library.
+
+To achieve the final nodeless build, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic. This ensures that Node.js built-in modules like `fs` are mocked.
+
+See the [`rollup.config.ts`](./rollup.config.ts) file for more information.
 
 ## Example Usage
 
