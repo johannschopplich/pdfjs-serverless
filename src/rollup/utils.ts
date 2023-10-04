@@ -2,8 +2,7 @@ export function resolveAliases(_aliases: Record<string, string>) {
   // Sort aliases from specific to general (ie. fs/promises before fs)
   const aliases = Object.fromEntries(
     Object.entries(_aliases).sort(
-      ([a], [b]) =>
-        b.split('/').length - a.split('/').length || b.length - a.length,
+      ([a], [b]) => b.split('/').length - a.split('/').length || b.length - a.length,
     ),
   )
 
