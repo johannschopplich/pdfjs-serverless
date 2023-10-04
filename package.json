@@ -53,7 +53,7 @@
     "@types/node": "^20.8.2",
     "bumpp": "^9.2.0",
     "eslint": "^8.50.0",
-    "pdfjs-dist": "^3.10.111",
+    "pdfjs-dist": "^3.11.174",
     "rollup": "^3.29.4",
     "typescript": "5.2.2",
     "unenv": "^1.7.4"

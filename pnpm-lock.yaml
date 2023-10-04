@@ -39,7 +39,7 @@ devDependencies:
     specifier: ^8.50.0
     version: 8.50.0
   pdfjs-dist:
-    specifier: ^3.10.111
+    specifier: ^3.11.174
     version: 3.11.174
   rollup:
     specifier: ^3.29.4
