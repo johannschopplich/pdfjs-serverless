@@ -44,7 +44,8 @@ export default defineConfig({
     }),
     alias({
       entries: resolveAliases({
-        canvas: 'src/mock/canvas.mjs',
+        'canvas': 'src/mock/canvas.mjs',
+        'path2d-polyfill': 'src/pdfjs-serverless/mock/path2d-polyfill.mjs',
         ...env.alias,
       }),
     }),
