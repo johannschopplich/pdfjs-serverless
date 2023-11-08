@@ -4,4 +4,9 @@ export default antfu(
   {
     ignores: ['tsconfig.json'],
   },
+  {
+    rules: {
+      'unused-imports/no-unused-imports': 'off',
+    },
+  },
 )
