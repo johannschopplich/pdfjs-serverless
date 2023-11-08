@@ -53,8 +53,9 @@
     "@types/node": "^20.9.0",
     "bumpp": "^9.2.0",
     "eslint": "^8.53.0",
-    "pdfjs-dist": "^3.11.174",
-    "rollup": "^3.29.4",
+    "pdfjs-dist": "^4.0.189",
+    "rollup": "^4.3.0",
+    "tslib": "^2.6.2",
     "typescript": "5.2.2",
     "unenv": "^1.7.4"
   }

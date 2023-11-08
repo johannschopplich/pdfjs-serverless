@@ -2,6 +2,13 @@
 
 A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments, like Deno Deploy and Cloudflare Workers with zero dependencies. All named exports of the `PDF.js` library are available at roughly 1.4 MB (minified).
 
+## PDF.js Compatibility
+
+> [!NOTE]
+> This package is currently using PDF.js v4.0.189.
+
+If you run into issues with the current version, please open an [issue](https://github.com/johannschopplich/pdfjs-serverless/issues/new/choose) or even better, open a [pull request](https://github.com/johannschopplich/pdfjs-serverless/compare).
+
 ## Installation
 
 Run the following command to add `pdfjs-serverless` to your project.

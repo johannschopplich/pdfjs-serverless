@@ -37,11 +37,9 @@ export default defineConfig({
         // take care of the remaining Node.js polyfills. Keep support for browsers.
         'const isNodeJS = typeof': 'const isNodeJS = typeof document === "undefined" // typeof',
         // Force inlining the PDF.js worker
-        '_util.isNodeJS && typeof require === "function"': 'true',
-        'GlobalWorkerOptions.workerSrc = ""': 'GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.js")',
-        'eval("require")(this.workerSrc)': 'require("pdfjs-dist/build/pdf.worker.js")',
+        'await import(/* webpackIgnore: true */ this.workerSrc)': '__pdfjsWorker__',
         // Tree-shake client worker initialization logic
-        '!PDFWorkerUtil.isWorkerDisabled && !PDFWorker._mainThreadWorkerMessageHandler': 'false',
+        '!PDFWorkerUtil.isWorkerDisabled && !PDFWorker.#mainThreadWorkerMessageHandler': 'false',
       },
     }),
     alias({
