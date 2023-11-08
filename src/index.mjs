@@ -1,13 +1,16 @@
 // These imports are needed in order to let unenv provide
-// shims before variable initialization
+// shims before variable initialization.
 import fs from 'node:fs'
 import http from 'node:http'
 import https from 'node:https'
 import url from 'node:url'
 
-// Inline the PDF.js worker to avoid having to load it from a separate file
-import __pdfjsWorker__ from 'pdfjs-dist/build/pdf.worker.mjs'
+// Inline the PDF.js worker to avoid having to load it from a separate file.
+import * as __pdfjsWorker__ from 'pdfjs-dist/build/pdf.worker.mjs'
 
+// Although we just need: `getDocument`, `OPS` and `version`, we export
+// everything, since the bundle size doesn't change, due to PDF.js's
+// bundle structure by webpack.
 export {
   AbortException,
   AnnotationEditorLayer,

@@ -1,7 +1,7 @@
 import { defineConfig } from 'rollup'
 import alias from '@rollup/plugin-alias'
 import replace from '@rollup/plugin-replace'
-import nodeResolve from '@rollup/plugin-node-resolve'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import inject from '@rollup/plugin-inject'
 import terser from '@rollup/plugin-terser'
