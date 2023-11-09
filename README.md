@@ -45,7 +45,7 @@ const { getDocument } = await resolvePDFJS()
 ```
 
 > [!NOTE]
-> Once Cloudflare workers support top-level await, we can remove this wrapper and pass all named exports directly again.
+> Once Cloudflare workers support top-level await, we can remove this wrapper and re-export all PDF.js named exports directly again.
 
 ### 🦕 Deno
 
