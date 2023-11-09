@@ -56,7 +56,10 @@ import { resolvePDFJS } from 'https://esm.sh/pdfjs-serverless'
 // Initialize PDF.js
 const { getDocument } = await resolvePDFJS()
 const data = Deno.readFileSync('sample.pdf')
-const doc = await getDocument(data).promise
+const doc = await getDocument({
+  data,
+  useSystemFonts: true,
+}).promise
 
 console.log(await doc.getMetadata())
 
@@ -87,7 +90,10 @@ async function handleRequest(request) {
 
   // Initialize PDF.js
   const { getDocument } = await resolvePDFJS()
-  const doc = await getDocument(data).promise
+  const doc = await getDocument({
+    data,
+    useSystemFonts: true,
+  }).promise
 
   // Get metadata and initialize output object
   const metadata = await doc.getMetadata()

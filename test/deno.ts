@@ -3,7 +3,10 @@ import { resolvePDFJS } from '../dist/index.mjs'
 
 const { getDocument } = await resolvePDFJS()
 const data = Deno.readFileSync('fixtures/sample.pdf')
-const doc = await getDocument(data).promise
+const doc = await getDocument({
+  data,
+  useSystemFonts: true,
+}).promise
 
 console.log(await doc.getMetadata())
 
