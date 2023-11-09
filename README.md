@@ -33,6 +33,7 @@ declare function resolvePDFJS(): Promise<typeof PDFJS>
 So, instead of importing the named exports directly:
 
 ```ts
+// This will NOT work at the moment
 import { getDocument } from 'pdfjs-serverless'
 ```
 
