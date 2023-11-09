@@ -58,5 +58,10 @@
     "tslib": "^2.6.2",
     "typescript": "5.2.2",
     "unenv": "^1.7.4"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "pdfjs-dist@4.0.189": "patches/pdfjs-dist@4.0.189.patch"
+    }
   }
 }

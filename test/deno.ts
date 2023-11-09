@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
-import { getDocument } from '../dist/index.mjs'
+import { resolvePDFJS } from '../dist/index.mjs'
 
-const data = Deno.readFileSync('fixtures/dummy.pdf')
+const { getDocument } = await resolvePDFJS()
+const data = Deno.readFileSync('fixtures/sample.pdf')
 const doc = await getDocument(data).promise
 
 console.log(await doc.getMetadata())

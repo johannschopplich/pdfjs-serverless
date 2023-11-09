@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  pdfjs-dist@4.0.189:
+    hash: iaxdb4qtlbjqjoitzftidcbonq
+    path: patches/pdfjs-dist@4.0.189.patch
+
 devDependencies:
   '@antfu/eslint-config':
     specifier: ^1.1.0
@@ -40,7 +45,7 @@ devDependencies:
     version: 8.53.0
   pdfjs-dist:
     specifier: ^4.0.189
-    version: 4.0.189
+    version: 4.0.189(patch_hash=iaxdb4qtlbjqjoitzftidcbonq)
   rollup:
     specifier: ^4.3.0
     version: 4.3.0
@@ -2429,7 +2434,7 @@ packages:
     resolution: {integrity: sha512-d+RQGp0MAYTIaDBIMmOfMwz3E+LOZnxx1HZd5R18mmCZY0QBlK0LDZfPc8FW8Ed2DlvsuE6PRjroDY+wg4+j/Q==}
     dev: true
 
-  /pdfjs-dist@4.0.189:
+  /pdfjs-dist@4.0.189(patch_hash=iaxdb4qtlbjqjoitzftidcbonq):
     resolution: {integrity: sha512-5IWbLRJjQJhk3cu3nNFAvIYoSzT8xRYlRkFCIV1tn7hK1eq9H+6vOP0ytJhZz9YI35IXlu33uQspvmYO6Oir4g==}
     engines: {node: '>=18'}
     optionalDependencies:
@@ -2439,6 +2444,7 @@ packages:
       - encoding
       - supports-color
     dev: true
+    patched: true
 
   /perfect-debounce@1.0.0:
     resolution: {integrity: sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==}
