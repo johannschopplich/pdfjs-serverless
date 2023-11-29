@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { defineConfig } from 'rollup'
 import alias from '@rollup/plugin-alias'
 import replace from '@rollup/plugin-replace'
@@ -9,6 +11,9 @@ import * as unenv from 'unenv'
 import { resolveAliases } from './src/rollup/utils'
 import { pdfjsTypes } from './src/rollup/plugins'
 
+const mockDir = fileURLToPath(
+  new URL('src/pdfjs-serverless/mocks', import.meta.url),
+)
 const env = unenv.env(unenv.nodeless)
 
 export default defineConfig({
@@ -44,8 +49,8 @@ export default defineConfig({
     }),
     alias({
       entries: resolveAliases({
-        'canvas': 'src/mock/canvas.mjs',
-        'path2d-polyfill': 'src/mock/path2d-polyfill.mjs',
+        'canvas': join(mockDir, 'canvas.mjs'),
+        'path2d-polyfill': join(mockDir, 'path2d-polyfill.mjs'),
         ...env.alias,
       }),
     }),

@@ -2,7 +2,7 @@
   "name": "pdfjs-serverless",
   "type": "module",
   "version": "0.4.0",
-  "packageManager": "pnpm@8.10.2",
+  "packageManager": "pnpm@8.11.0",
   "description": "Serverless build of PDF.js for Deno, workers, and other nodeless environments",
   "author": "Johann Schopplich <pkg@johannschopplich.com>",
   "license": "MIT",
@@ -42,22 +42,22 @@
     "release": "bumpp --commit --push --tag"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^1.1.0",
-    "@rollup/plugin-alias": "^5.0.1",
+    "@antfu/eslint-config": "^2.1.1",
+    "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
-    "@types/node": "^20.9.0",
+    "@types/node": "^20.10.0",
     "bumpp": "^9.2.0",
-    "eslint": "^8.53.0",
-    "pdfjs-dist": "^4.0.189",
-    "rollup": "^4.3.0",
+    "eslint": "^8.54.0",
+    "pdfjs-dist": "4.0.189",
+    "rollup": "^4.6.0",
     "tslib": "^2.6.2",
     "typescript": "5.2.2",
-    "unenv": "^1.7.4"
+    "unenv": "^1.8.0"
   },
   "pnpm": {
     "patchedDependencies": {
