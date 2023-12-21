@@ -5,9 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  pdfjs-dist@4.0.189:
-    hash: iaxdb4qtlbjqjoitzftidcbonq
-    path: patches/pdfjs-dist@4.0.189.patch
+  pdfjs-dist@4.0.269:
+    hash: auxd7wtowsnjif2p54wnqr5l44
+    path: patches/pdfjs-dist@4.0.269.patch
 
 devDependencies:
   '@antfu/eslint-config':
@@ -44,8 +44,8 @@ devDependencies:
     specifier: ^8.56.0
     version: 8.56.0
   pdfjs-dist:
-    specifier: 4.0.189
-    version: 4.0.189(patch_hash=iaxdb4qtlbjqjoitzftidcbonq)
+    specifier: ^4.0.269
+    version: 4.0.269(patch_hash=auxd7wtowsnjif2p54wnqr5l44)
   rollup:
     specifier: ^4.9.1
     version: 4.9.1
@@ -2683,8 +2683,8 @@ packages:
     resolution: {integrity: sha512-d+RQGp0MAYTIaDBIMmOfMwz3E+LOZnxx1HZd5R18mmCZY0QBlK0LDZfPc8FW8Ed2DlvsuE6PRjroDY+wg4+j/Q==}
     dev: true
 
-  /pdfjs-dist@4.0.189(patch_hash=iaxdb4qtlbjqjoitzftidcbonq):
-    resolution: {integrity: sha512-5IWbLRJjQJhk3cu3nNFAvIYoSzT8xRYlRkFCIV1tn7hK1eq9H+6vOP0ytJhZz9YI35IXlu33uQspvmYO6Oir4g==}
+  /pdfjs-dist@4.0.269(patch_hash=auxd7wtowsnjif2p54wnqr5l44):
+    resolution: {integrity: sha512-jjWO56tcOjnmPqDf8PmXDeZ781AGvpHMYI3HhNtaFKTRXXPaD1ArSrhVe38/XsrIQJ0onISCND/vuXaWJkiDWw==}
     engines: {node: '>=18'}
     optionalDependencies:
       canvas: 2.11.2
