@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+// eslint-disable-next-line antfu/no-import-dist
 import { resolvePDFJS } from '../dist/index.mjs'
 
 const { getDocument } = await resolvePDFJS()
