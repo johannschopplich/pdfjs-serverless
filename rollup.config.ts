@@ -11,9 +11,7 @@ import * as unenv from 'unenv'
 import { resolveAliases } from './src/rollup/utils'
 import { pdfjsTypes } from './src/rollup/plugins'
 
-const mockDir = fileURLToPath(
-  new URL('src/pdfjs-serverless/mocks', import.meta.url),
-)
+const mockDir = fileURLToPath(new URL('src/mocks', import.meta.url))
 const env = unenv.env(unenv.nodeless)
 
 export default defineConfig({
