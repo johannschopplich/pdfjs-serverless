@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   pdfjs-dist@4.0.379:
-    hash: leeycyociuiegb4n7fe6idlviq
+    hash: vjj56wni2lavbhk5tlb33ogqoy
     path: patches/pdfjs-dist@4.0.379.patch
 
 devDependencies:
@@ -35,8 +35,8 @@ devDependencies:
     specifier: ^11.1.6
     version: 11.1.6(rollup@4.9.6)(tslib@2.6.2)(typescript@5.2.2)
   '@types/node':
-    specifier: ^20.11.6
-    version: 20.11.6
+    specifier: ^20.11.7
+    version: 20.11.7
   bumpp:
     specifier: ^9.3.0
     version: 9.3.0
@@ -45,7 +45,7 @@ devDependencies:
     version: 8.56.0
   pdfjs-dist:
     specifier: ^4.0.379
-    version: 4.0.379(patch_hash=leeycyociuiegb4n7fe6idlviq)
+    version: 4.0.379(patch_hash=vjj56wni2lavbhk5tlb33ogqoy)
   rollup:
     specifier: ^4.9.6
     version: 4.9.6
@@ -108,7 +108,7 @@ packages:
       eslint-plugin-antfu: 2.1.2(eslint@8.56.0)
       eslint-plugin-eslint-comments: 3.2.0(eslint@8.56.0)
       eslint-plugin-i: 2.29.1(@typescript-eslint/parser@6.19.1)(eslint@8.56.0)
-      eslint-plugin-jsdoc: 48.0.3(eslint@8.56.0)
+      eslint-plugin-jsdoc: 48.0.4(eslint@8.56.0)
       eslint-plugin-jsonc: 2.13.0(eslint@8.56.0)
       eslint-plugin-markdown: 3.0.1(eslint@8.56.0)
       eslint-plugin-n: 16.6.2(eslint@8.56.0)
@@ -180,16 +180,16 @@ packages:
       js-tokens: 4.0.0
     dev: true
 
-  /@babel/parser@7.23.6:
-    resolution: {integrity: sha512-Z2uID7YJ7oNvAI20O9X0bblw7Qqs8Q2hFy0R9tAfnfLkp5MW0UH9eUvnDSnFwKZ0AvgS1ucqR4KzvVHgnke1VQ==}
+  /@babel/parser@7.23.9:
+    resolution: {integrity: sha512-9tcKgqKbs3xGJ+NtKF2ndOBBLVwPjl1SHxPQkd36r3Dlirw3xWUeGaTbqr7uGZcTaxkVNwc+03SVP7aCdWrTlA==}
     engines: {node: '>=6.0.0'}
     hasBin: true
     dependencies:
-      '@babel/types': 7.23.6
+      '@babel/types': 7.23.9
     dev: true
 
-  /@babel/types@7.23.6:
-    resolution: {integrity: sha512-+uarb83brBzPKN38NX1MkB6vb6+mwvR6amUulqAE7ccQw1pEl+bCia9TbdG1lsnFP7lZySvUn37CHyXQdfTwzg==}
+  /@babel/types@7.23.9:
+    resolution: {integrity: sha512-dQjSq/7HaSjRM43FFGnv5keM2HsxpmyV1PfaSVm0nzzjwwTmjOe6J4bC8e3+pTEIgHaHj+1ZlLThRJ2auc/w1Q==}
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/helper-string-parser': 7.23.4
@@ -360,7 +360,7 @@ packages:
     engines: {node: '>= 8'}
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
-      fastq: 1.16.0
+      fastq: 1.17.0
     dev: true
 
   /@rollup/plugin-alias@5.1.0(rollup@4.9.6):
@@ -675,8 +675,8 @@ packages:
       '@types/unist': 2.0.10
     dev: true
 
-  /@types/node@20.11.6:
-    resolution: {integrity: sha512-+EOokTnksGVgip2PbYbr3xnR7kZigh4LbybAfBAw5BpnQ+FqBYUsvCEjYd70IXKlbohQ64mzEYmMtlWUY8q//Q==}
+  /@types/node@20.11.7:
+    resolution: {integrity: sha512-GPmeN1C3XAyV5uybAf4cMLWT9fDWcmQhZVtMFu7OR32WjrqGG+Wnk2V1d0bmtUyE/Zy1QJ9BxyiTih9z8Oks8A==}
     dependencies:
       undici-types: 5.26.5
     dev: true
@@ -836,7 +836,7 @@ packages:
   /@vue/compiler-core@3.4.15:
     resolution: {integrity: sha512-XcJQVOaxTKCnth1vCxEChteGuwG6wqnUHxAm1DO3gCz0+uXKaJNx8/digSz4dLALCy8n2lKq24jSUs8segoqIw==}
     dependencies:
-      '@babel/parser': 7.23.6
+      '@babel/parser': 7.23.9
       '@vue/shared': 3.4.15
       entities: 4.5.0
       estree-walker: 2.0.2
@@ -853,7 +853,7 @@ packages:
   /@vue/compiler-sfc@3.4.15:
     resolution: {integrity: sha512-LCn5M6QpkpFsh3GQvs2mJUOAlBQcCco8D60Bcqmf3O3w5a+KWS5GvYbrrJBkgvL1BDnTp+e8q0lXCLgHhKguBA==}
     dependencies:
-      '@babel/parser': 7.23.6
+      '@babel/parser': 7.23.9
       '@vue/compiler-core': 3.4.15
       '@vue/compiler-dom': 3.4.15
       '@vue/compiler-ssr': 3.4.15
@@ -1005,15 +1005,15 @@ packages:
       fill-range: 7.0.1
     dev: true
 
-  /browserslist@4.22.2:
-    resolution: {integrity: sha512-0UgcrvQmBDvZHFGdYUehrCNIazki7/lUP3kkoi/r3YB2amZbFM9J43ZRkJTXBUZK4gmx56+Sqk9+Vs9mwZx9+A==}
+  /browserslist@4.22.3:
+    resolution: {integrity: sha512-UAp55yfwNv0klWNapjs/ktHoguxuQNGnOzxYmfnXIS+8AsRDZkSDxg7R1AX3GKzn078SBI5dzwzj/Yx0Or0e3A==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001580
-      electron-to-chromium: 1.4.645
+      electron-to-chromium: 1.4.648
       node-releases: 2.0.14
-      update-browserslist-db: 1.0.13(browserslist@4.22.2)
+      update-browserslist-db: 1.0.13(browserslist@4.22.3)
     dev: true
 
   /buffer-from@1.1.2:
@@ -1229,7 +1229,7 @@ packages:
   /core-js-compat@3.35.1:
     resolution: {integrity: sha512-sftHa5qUJY3rs9Zht1WEnmkvXputCyDBczPnr7QDgL8n3qrF3CMXY4VPSYtOLLiOUJcah2WNXREd48iOl6mQIw==}
     dependencies:
-      browserslist: 4.22.2
+      browserslist: 4.22.3
     dev: true
 
   /cross-spawn@7.0.3:
@@ -1328,13 +1328,12 @@ packages:
     engines: {node: '>=12'}
     dev: true
 
-  /electron-to-chromium@1.4.645:
-    resolution: {integrity: sha512-EeS1oQDCmnYsRDRy2zTeC336a/4LZ6WKqvSaM1jLocEk5ZuyszkQtCpsqvuvaIXGOUjwtvF6LTcS8WueibXvSw==}
+  /electron-to-chromium@1.4.648:
+    resolution: {integrity: sha512-EmFMarXeqJp9cUKu/QEciEApn0S/xRcpZWuAm32U7NgoZCimjsilKXHRO9saeEW55eHZagIDg6XTUOv32w9pjg==}
     dev: true
 
   /emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
-    requiresBuild: true
     dev: true
 
   /entities@4.5.0:
@@ -1488,8 +1487,8 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-plugin-jsdoc@48.0.3(eslint@8.56.0):
-    resolution: {integrity: sha512-+vQWLZ9QmT23yU+8yolfga6p9AtC6dUCwtVoJe4+DClvhnoGswKZcOqw+tMA/lkj5zbgr67PYWwgMvQftPx7Dw==}
+  /eslint-plugin-jsdoc@48.0.4(eslint@8.56.0):
+    resolution: {integrity: sha512-A0cH+5svWPXzGZszBjXA1t0aAqVGS+/x3i02KFmb73rU0iMLnadEcVWcD/dGBZHIfAMKr3YpWh58f6wn4N909w==}
     engines: {node: '>=18'}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0 || ^9.0.0
@@ -1851,8 +1850,8 @@ packages:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
     dev: true
 
-  /fastq@1.16.0:
-    resolution: {integrity: sha512-ifCoaXsDrsdkWTtiNJX5uzHDsrck5TzfKKDcuFFTIrrc/BS076qgEIfoIy1VeZqViznfKiysPYTh/QeHtnIsYA==}
+  /fastq@1.17.0:
+    resolution: {integrity: sha512-zGygtijUMT7jnk3h26kUms3BkSDp4IfIKjmnqI2tvx6nuBfiF1UqOxbnLfzdv+apBy+53oaImsKtMw/xYbW+1w==}
     dependencies:
       reusify: 1.0.4
     dev: true
@@ -2161,7 +2160,6 @@ packages:
   /is-fullwidth-code-point@3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
-    requiresBuild: true
     dev: true
 
   /is-glob@4.0.3:
@@ -2718,7 +2716,7 @@ packages:
     resolution: {integrity: sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==}
     dev: true
 
-  /pdfjs-dist@4.0.379(patch_hash=leeycyociuiegb4n7fe6idlviq):
+  /pdfjs-dist@4.0.379(patch_hash=vjj56wni2lavbhk5tlb33ogqoy):
     resolution: {integrity: sha512-6H0Gv1nna+wmrr3CakaKlZ4rbrL8hvGIFAgg4YcoFuGC0HC4B2DVjXEGTFjJEjLlf8nYi3C3/MYRcM5bNx0elA==}
     engines: {node: '>=18'}
     optionalDependencies:
@@ -3255,13 +3253,13 @@ packages:
       '@types/unist': 2.0.10
     dev: true
 
-  /update-browserslist-db@1.0.13(browserslist@4.22.2):
+  /update-browserslist-db@1.0.13(browserslist@4.22.3):
     resolution: {integrity: sha512-xebP81SNcPuNpPP3uzeW1NYXxI3rxyJzF3pD6sH4jE7o/IX+WtSpwnVU+qIsDPyk0d3hmFQ7mjqc6AtV604hbg==}
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
     dependencies:
-      browserslist: 4.22.2
+      browserslist: 4.22.3
       escalade: 3.1.1
       picocolors: 1.0.0
     dev: true
