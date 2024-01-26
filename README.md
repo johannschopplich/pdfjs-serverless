@@ -5,7 +5,7 @@ A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for se
 ## PDF.js Compatibility
 
 > [!NOTE]
-> This package is currently using PDF.js v4.0.189.
+> This package is currently using PDF.js v4.0.379.
 
 ## Installation
 
