@@ -19,9 +19,7 @@ export default defineConfig({
   output: {
     file: 'dist/index.mjs',
     format: 'esm',
-    // exports: 'named',
-    intro: '',
-    outro: '',
+    exports: 'auto',
     inlineDynamicImports: true,
     generatedCode: {
       constBindings: true,
