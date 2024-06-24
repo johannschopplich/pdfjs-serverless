@@ -59,7 +59,7 @@ import * as __pdfjsWorker__ from 'pdfjs-dist/build/pdf.worker.mjs'
 //   setLayerDimensions,
 //   shadow,
 //   updateTextLayer,
-//   versionn,
+//   version,
 // } from 'pdfjs-dist/build/pdf.mjs'
 
 // Wrap PDF.js exports to circumvent Cloudflare's top-level await limitation.
