@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+/* eslint-disable antfu/no-top-level-await */
+/* eslint-disable no-console  */
 // eslint-disable-next-line antfu/no-import-dist
 import { resolvePDFJS } from '../dist/index.mjs'
 

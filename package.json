@@ -2,7 +2,7 @@
   "name": "pdfjs-serverless",
   "type": "module",
   "version": "0.5.1",
-  "packageManager": "pnpm@9.3.0",
+  "packageManager": "pnpm@9.11.0",
   "description": "Serverless build of PDF.js for Deno, workers, and other nodeless environments",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
   "license": "MIT",
@@ -42,26 +42,26 @@
     "release": "bumpp --commit --push --tag"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.21.1",
-    "@rollup/plugin-alias": "^5.1.0",
-    "@rollup/plugin-commonjs": "^26.0.1",
+    "@antfu/eslint-config": "^3.7.3",
+    "@rollup/plugin-alias": "^5.1.1",
+    "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-inject": "^5.0.5",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.7",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-replace": "^6.0.1",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/node": "^20.14.2",
-    "bumpp": "^9.4.1",
-    "eslint": "^9.4.0",
-    "pdfjs-dist": "^4.3.136",
-    "rollup": "^4.18.0",
-    "tslib": "^2.6.3",
-    "typescript": "^5.4.5",
-    "unenv": "^1.9.0"
+    "@rollup/plugin-typescript": "^12.1.0",
+    "@types/node": "^20.16.10",
+    "bumpp": "^9.6.1",
+    "eslint": "^9.11.1",
+    "pdfjs-dist": "^4.6.82",
+    "rollup": "^4.23.0",
+    "tslib": "^2.7.0",
+    "typescript": "^5.5.4",
+    "unenv": "^1.10.0"
   },
   "pnpm": {
     "patchedDependencies": {
-      "pdfjs-dist@4.3.136": "patches/pdfjs-dist@4.3.136.patch"
+      "pdfjs-dist@4.6.82": "patches/pdfjs-dist@4.6.82.patch"
     }
   }
 }

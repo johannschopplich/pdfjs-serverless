@@ -1,5 +1,5 @@
-import { writeFile } from 'node:fs/promises'
 import type { Plugin } from 'rollup'
+import { writeFile } from 'node:fs/promises'
 
 export function pdfjsTypes(): Plugin {
   return {

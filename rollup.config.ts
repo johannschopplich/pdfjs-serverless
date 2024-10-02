@@ -1,15 +1,15 @@
-import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
-import { defineConfig } from 'rollup'
+import { fileURLToPath } from 'node:url'
 import alias from '@rollup/plugin-alias'
-import replace from '@rollup/plugin-replace'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import inject from '@rollup/plugin-inject'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import replace from '@rollup/plugin-replace'
 import terser from '@rollup/plugin-terser'
+import { defineConfig } from 'rollup'
 import * as unenv from 'unenv'
-import { resolveAliases } from './src/rollup/utils'
 import { pdfjsTypes } from './src/rollup/plugins'
+import { resolveAliases } from './src/rollup/utils'
 
 const mockDir = fileURLToPath(new URL('src/mocks', import.meta.url))
 const env = unenv.env(unenv.nodeless)
