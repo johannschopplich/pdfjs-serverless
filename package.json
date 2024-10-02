@@ -1,7 +1,7 @@
 {
   "name": "pdfjs-serverless",
   "type": "module",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "packageManager": "pnpm@9.11.0",
   "description": "Serverless build of PDF.js for Deno, workers, and other nodeless environments",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
@@ -39,7 +39,7 @@
     "build": "pnpm run build:pre && pnpm run build:post",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "release": "bumpp --commit --push --tag"
+    "release": "bumpp"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.3",
