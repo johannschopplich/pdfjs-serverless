@@ -1,7 +1,7 @@
 {
   "name": "pdfjs-serverless",
   "type": "module",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "packageManager": "pnpm@10.4.1",
   "description": "Serverless build of PDF.js for Deno, workers, and other nodeless environments",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
