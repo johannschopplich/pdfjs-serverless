@@ -20,57 +20,8 @@ Promise.withResolvers ??= function () {
 // Inline the PDF.js worker to avoid having to load it from a separate file.
 import * as __pdfjsWorker__ from 'pdfjs-dist/build/pdf.worker.mjs'
 
-// Although we just need: `getDocument`, `OPS` and `version`, we export
-// everything, since the bundle size doesn't change, due to PDF.js's
-// bundle structure by webpack.
-// TODO: Enable again when Cloudflare supports top-level await.
-// export {
-//   AbortException,
-//   AnnotationEditorLayer,
-//   AnnotationEditorParamsType,
-//   AnnotationEditorType,
-//   AnnotationEditorUIManager,
-//   AnnotationLayer,
-//   AnnotationMode,
-//   build,
-//   CMapCompressionType,
-//   ColorPicker,
-//   createValidAbsoluteUrl,
-//   DOMSVGFactory,
-//   DrawLayer,
-//   FeatureTest,
-//   fetchData,
-//   getDocument,
-//   getFilenameFromUrl,
-//   getPdfFilenameFromUrl,
-//   getXfaPageViewport,
-//   GlobalWorkerOptions,
-//   ImageKind,
-//   InvalidPDFException,
-//   isDataScheme,
-//   isPdfFile,
-//   MissingPDFException,
-//   noContextMenu,
-//   normalizeUnicode,
-//   OPS,
-//   PasswordResponses,
-//   PDFDataRangeTransport,
-//   PDFDateString,
-//   PDFWorker,
-//   PermissionFlag,
-//   PixelsPerInch,
-//   RenderingCancelledException,
-//   setLayerDimensions,
-//   shadow,
-//   TextLayer,
-//   UnexpectedResponseException,
-//   Util,
-//   VerbosityLevel,
-//   version,
-//   XfaLayer,
-// } from 'pdfjs-dist/build/pdf.mjs'
-
 // Wrap PDF.js exports to circumvent Cloudflare's top-level await limitation.
+// eslint-disable-next-line perfectionist/sort-imports
 import { __main__ } from 'pdfjs-dist/build/pdf.mjs'
 
 export function resolvePDFJS() {
