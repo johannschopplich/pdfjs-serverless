@@ -26,7 +26,7 @@ yarn add -D pdfjs-serverless
 
 ## Usage
 
-> [TIP]
+> [!TIP]
 > For common operations, such as extracting text content or images from PDF files, you can use the [`unpdf` package](https://github.com/unjs/unpdf). It is a wrapper around `pdfjs-serverless` and provides a simple API for common use cases.
 
 `pdfjs-serverless` provides the same API as the original PDF.js library. To use any of the PDF.js exports, rename the import to `pdfjs-serverless` instead of `pdfjs-dist`:
