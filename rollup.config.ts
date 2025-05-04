@@ -1,18 +1,22 @@
-import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import alias from '@rollup/plugin-alias'
-import commonjs from '@rollup/plugin-commonjs'
-import inject from '@rollup/plugin-inject'
+// This rollup config builds a PDF.js bundle for serverless environments
+
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import terser from '@rollup/plugin-terser'
 import { defineConfig } from 'rollup'
-import * as unenv from 'unenv'
 import { pdfjsTypes } from './src/rollup/plugins'
-import { resolveAliases } from './src/rollup/utils'
 
-const mockDir = fileURLToPath(new URL('src/mocks', import.meta.url))
-const env = unenv.env(unenv.nodeless)
+const canvasMock = `
+new Proxy({}, {
+  get(target, prop) {
+    return () => {
+      throw new Error("@napi-rs/canvas is not available in this environment")
+    }
+  },
+})
+`
+  .replaceAll('\n', '')
+  .trim()
 
 export default defineConfig({
   input: 'src/index.mjs',
@@ -26,45 +30,36 @@ export default defineConfig({
     },
     sourcemap: false,
   },
-  external: env.external,
   plugins: [
     replace({
       delimiters: ['', ''],
       preventAssignment: true,
       values: {
-        // Disable the `window` check (for requestAnimationFrame)
-        'typeof window': '"undefined"',
-        // Imitate the Node.js environment for all serverless environments, unenv will
-        // take care of the remaining Node.js polyfills. Keep support for browsers.
-        'const isNodeJS = typeof': 'const isNodeJS = typeof document === "undefined" // typeof',
-        // Force inlining the PDF.js worker
-        'await import(/* webpackIgnore: true */ this.workerSrc)': '__pdfjsWorker__',
-        // Tree-shake client worker initialization logic
-        '!PDFWorkerUtil.isWorkerDisabled && !PDFWorker.#mainThreadWorkerMessageHandler': 'false',
+        // Mimick Node.js environment.
+        'const isNodeJS = typeof': 'const isNodeJS = typeof window === "undefined" // typeof',
+        // Force inlining the PDF.js worker.
+        'await import(/*webpackIgnore: true*/this.workerSrc)': '__pdfjsWorker__',
+        // Force setting up fake PDF.js worker.
+        '#isWorkerDisabled = false': '#isWorkerDisabled = true',
+        // Remove WASM code from the worker.
+        'wasmExports = await createWasm': 'wasmExports = {}',
+        'if (!this.#modulePromise)': 'if (false)',
+        '#instantiateWasm(fallbackCallback, imports, successCallback) {': '#instantiateWasm(fallbackCallback, imports, successCallback) { return;',
+        '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
+        // Mock the `@napi-rs/canvas` module import from the unused `NodeCanvasFactory` class.
+        'require("@napi-rs/canvas")': canvasMock,
       },
-    }),
-    alias({
-      entries: resolveAliases({
-        'canvas': join(mockDir, 'canvas.mjs'),
-        'path2d-polyfill': join(mockDir, 'path2d-polyfill.mjs'),
-        ...env.alias,
-      }),
     }),
     nodeResolve(),
-    commonjs({
-      esmExternals: id => !id.startsWith('unenv/'),
-      requireReturnsDefault: 'auto',
-    }),
-    inject(env.inject),
     pdfjsTypes(),
-    terser({
-      mangle: {
-        keep_fnames: true,
-        keep_classnames: true,
-      },
-      format: {
-        comments: false,
-      },
-    }),
+    // terser({
+    //   mangle: {
+    //     keep_fnames: true,
+    //     keep_classnames: true,
+    //   },
+    //   format: {
+    //     comments: false,
+    //   },
+    // }),
   ],
 })

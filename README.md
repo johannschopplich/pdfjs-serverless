@@ -1,11 +1,13 @@
 # pdfjs-serverless
 
-A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for serverless environments, like Deno Deploy and Cloudflare Workers with zero dependencies. The whole export is about 1.4 MB (minified).
+A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for edge environments, like Cloudflare Workers. It is especially useful for serverless AI applications, where you want to parse PDF documents and extract text content.
+
+This package comes with zero dependencies. The whole export is about 1.4 MB (minified).
 
 ## PDF.js Compatibility
 
 > [!NOTE]
-> This package is currently using PDF.js v4.10.38.
+> `pdfjs-serverless` is currently built from PDF.js v5.2.133.
 
 ## Installation
 
@@ -13,124 +15,106 @@ Run the following command to add `pdfjs-serverless` to your project.
 
 ```bash
 # pnpm
-pnpm add pdfjs-serverless
+pnpm add -D pdfjs-serverless
 
 # npm
-npm install pdfjs-serverless
+npm install -D pdfjs-serverless
 
 # yarn
-yarn add pdfjs-serverless
+yarn add -D pdfjs-serverless
 ```
 
 ## Usage
 
-Since PDF.js v4, the library migrated to ESM. Which is great. However, it also uses a top-level await, which is not supported by Cloudflare workers yet. Therefore, we have to wrap all named exports in a function that resolves the PDF.js library:
+> [TIP]
+> For common operations, such as extracting text content or images from PDF files, you can use the [`unpdf` package](https://github.com/unjs/unpdf). It is a wrapper around `pdfjs-serverless` and provides a simple API for common use cases.
 
-```ts
-declare function resolvePDFJS(): Promise<typeof PDFJS>
+`pdfjs-serverless` provides the same API as the original PDF.js library. To use any of the PDF.js exports, rename the import to `pdfjs-serverless` instead of `pdfjs-dist`:
+
+```diff
+- import { getDocument } from 'pdfjs-dist'
++ import { getDocument } from 'pdfjs-serverless'
 ```
 
-So, instead of importing the named exports directly:
+## Examples
+
+### 🌩 Cloudflare Workers
 
 ```ts
-// This will NOT work at the moment
-import { getDocument } from 'pdfjs-serverless'
+export default {
+  async fetch(request) {
+    if (request.method !== 'POST')
+      return new Response('Method Not Allowed', { status: 405 })
+
+    const { getDocument } = await import('pdfjs-serverless')
+
+    // Get the PDF file from the POST request body as a buffer
+    const data = await request.arrayBuffer()
+
+    const document = await getDocument({
+      data: new Uint8Array(data),
+      useSystemFonts: true,
+    }).promise
+
+    // Get metadata and initialize output object
+    const metadata = await document.getMetadata()
+    const output = {
+      metadata,
+      pages: []
+    }
+
+    // Iterate through each page and fetch the text content
+    for (let i = 1; i <= document.numPages; i++) {
+      const page = await document.getPage(i)
+      const textContent = await page.getTextContent()
+      const contents = textContent.items.map(item => item.str).join(' ')
+
+      // Add page content to output
+      output.pages.push({
+        pageNumber: i,
+        content: contents
+      })
+    }
+
+    // Return the results as JSON
+    return new Response(JSON.stringify(output), {
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
+}
 ```
-
-We have to use the `resolvePDFJS` function to get the named exports:
-
-```ts
-import { resolvePDFJS } from 'pdfjs-serverless'
-
-const { getDocument } = await resolvePDFJS()
-```
-
-> [!NOTE]
-> Once Cloudflare workers support top-level await, we can remove this wrapper and re-export all PDF.js named exports directly again.
 
 ### 🦕 Deno
 
 ```ts
-import { resolvePDFJS } from 'https://esm.sh/pdfjs-serverless'
+import { getDocument } from 'https://esm.sh/pdfjs-serverless'
 
-// Initialize PDF.js
-const { getDocument } = await resolvePDFJS()
 const data = Deno.readFileSync('sample.pdf')
-const doc = await getDocument({
+const document = await getDocument({
   data,
   useSystemFonts: true,
 }).promise
 
-console.log(await doc.getMetadata())
+console.log(await document.getMetadata())
 
 // Iterate through each page and fetch the text content
-for (let i = 1; i <= doc.numPages; i++) {
-  const page = await doc.getPage(i)
+for (let i = 1; i <= document.numPages; i++) {
+  const page = await document.getPage(i)
   const textContent = await page.getTextContent()
   const contents = textContent.items.map(item => item.str).join(' ')
   console.log(contents)
 }
 ```
 
-### 🌩 Cloudflare Workers
-
-```ts
-import { resolvePDFJS } from 'pdfjs-serverless'
-
-addEventListener('fetch', (event) => {
-  event.respondWith(handleRequest(event.request))
-})
-
-async function handleRequest(request) {
-  if (request.method !== 'POST')
-    return new Response('Method Not Allowed', { status: 405 })
-
-  // Get the PDF file from the POST request body as a buffer
-  const data = await request.arrayBuffer()
-
-  // Initialize PDF.js
-  const { getDocument } = await resolvePDFJS()
-  const doc = await getDocument({
-    data,
-    useSystemFonts: true,
-  }).promise
-
-  // Get metadata and initialize output object
-  const metadata = await doc.getMetadata()
-  const output = {
-    metadata,
-    pages: []
-  }
-
-  // Iterate through each page and fetch the text content
-  for (let i = 1; i <= doc.numPages; i++) {
-    const page = await doc.getPage(i)
-    const textContent = await page.getTextContent()
-    const contents = textContent.items.map(item => item.str).join(' ')
-
-    // Add page content to output
-    output.pages.push({
-      pageNumber: i,
-      content: contents
-    })
-  }
-
-  // Return the results as JSON
-  return new Response(JSON.stringify(output), {
-    headers: { 'Content-Type': 'application/json' }
-  })
-}
-```
-
 ## How It Works
 
-First, some string replacements of the `PDF.js` library is necessary, i.e. removing browser context references and checks like `typeof window`. Additionally, we enforce Node.js compatibility (might sound paradox at first, bear with me), i.e. mocking the `canvas` module and setting the `isNodeJS` flag to `true`.
+Heart and soul of this package is the [`rollup.config.ts`](./rollup.config.ts) file. It uses [`rollup`](https://rollupjs.org/) to bundle the PDF.js library into a single file that can be used in serverless environments.
 
-PDF.js uses a worker to parse and work with PDF documents. This worker is a separate file that is loaded by the main library. For the serverless build, we need to inline the worker code into the main library.
+The heavy lifting comes from string replacements of the `PDF.js` library, i.e. removing browser context references and checks such as `typeof window`. Additionally, we enforce Node.js compatibility (may sound paradoxical at first, bear with me), i.e. we mock the `@napi-rs/canvas` module and set the `isNodeJS` flag to `true`.
 
-To achieve the final nodeless build, [`unenv`](https://github.com/unjs/unenv) does the heavy lifting by converting Node.js specific code to be platform-agnostic. This ensures that Node.js built-in modules like `fs` are mocked.
+PDF.js uses a worker to parse PDF documents. This worker is a separate file that is loaded by the main library. For the serverless build, we need to inline the worker code into the main library.
 
-See the [`rollup.config.ts`](./rollup.config.ts) file for more information.
+Finally, some mocks are added to the global scope that are not available in serverless environments, such as `FinalizationRegistry` which is not available in Cloudflare Workers.
 
 ## Inspiration
 
