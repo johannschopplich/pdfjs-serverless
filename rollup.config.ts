@@ -52,14 +52,14 @@ export default defineConfig({
     }),
     nodeResolve(),
     pdfjsTypes(),
-    // terser({
-    //   mangle: {
-    //     keep_fnames: true,
-    //     keep_classnames: true,
-    //   },
-    //   format: {
-    //     comments: false,
-    //   },
-    // }),
+    terser({
+      mangle: {
+        keep_fnames: true,
+        keep_classnames: true,
+      },
+      format: {
+        comments: false,
+      },
+    }),
   ],
 })
