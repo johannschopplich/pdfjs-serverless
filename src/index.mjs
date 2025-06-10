@@ -1,4 +1,3 @@
-/* eslint-disable import/first */
 /* eslint-disable no-unused-vars */
 
 // Import mocks & polyfills first and ensure they are not removed by tree-shaking.
