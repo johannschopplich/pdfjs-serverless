@@ -1,2 +1,8 @@
+packages:
+  - examples/*
+
 onlyBuiltDependencies:
+  - esbuild
+  - sharp
   - unrs-resolver
+  - workerd

@@ -7,7 +7,7 @@ This package comes with zero dependencies. The whole export is about 1.4 MB (min
 ## PDF.js Compatibility
 
 > [!NOTE]
-> `pdfjs-serverless` is currently built from PDF.js v5.2.133.
+> `pdfjs-serverless` is currently built from PDF.js v5.4.149.
 
 ## Installation
 
