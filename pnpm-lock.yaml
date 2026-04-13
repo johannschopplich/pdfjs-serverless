@@ -50,6 +50,18 @@ importers:
       esbuild:
         specifier: ^0.28.0
         version: 0.28.0
+      pdfjs-serverless:
+        specifier: workspace:*
+        version: link:../..
+      wrangler:
+        specifier: ^4.81.1
+        version: 4.81.1
+
+  examples/cloudflare-pages:
+    devDependencies:
+      pdfjs-serverless:
+        specifier: workspace:*
+        version: link:../..
       wrangler:
         specifier: ^4.81.1
         version: 4.81.1
