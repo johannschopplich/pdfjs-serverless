@@ -27,6 +27,7 @@ declare function resolvePDFJS(): Promise<typeof PDFJS>
 
 export { resolvePDFJS }
 export * from './types/src/pdf'
+export type { TextContent, TextItem, TextMarkedContent, TextStyle } from './types/src/display/api'
 `.trimStart()
 
       await writeFile('dist/index.d.mts', typeExports, 'utf8')
