@@ -2,8 +2,8 @@
 
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
-import terser from '@rollup/plugin-terser'
 import { defineConfig } from 'rollup'
+import esbuild from 'rollup-plugin-esbuild'
 import { pdfjsTypes } from './src/rollup/plugins'
 
 const canvasMock = `
@@ -54,14 +54,11 @@ export default defineConfig({
     }),
     nodeResolve(),
     pdfjsTypes(),
-    terser({
-      mangle: {
-        keep_fnames: true,
-        keep_classnames: true,
-      },
-      format: {
-        comments: false,
-      },
+    esbuild({
+      target: 'es2021',
+      minify: true,
+      keepNames: true,
+      legalComments: 'none',
     }),
   ],
 })
