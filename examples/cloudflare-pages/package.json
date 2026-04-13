@@ -2,10 +2,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "esbuild --bundle --platform=neutral --outfile=dist/index.js index.ts && wrangler dev dist/index.js"
+    "dev": "wrangler pages dev public/ --compatibility-date 2026-04-10 --compatibility-flags nodejs_compat"
   },
   "devDependencies": {
-    "esbuild": "^0.28.0",
     "pdfjs-serverless": "workspace:*",
     "wrangler": "^4.81.1"
   }
