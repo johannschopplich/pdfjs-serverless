@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.1.0",
   "packageManager": "pnpm@10.33.0",
-  "description": "Serverless redistribution of PDF.js for edge environments",
+  "description": "PDF.js redistributed as a single bundle for edge and serverless runtimes",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
   "license": "MIT",
   "homepage": "https://github.com/johannschopplich/pdfjs-serverless#readme",
@@ -15,11 +15,15 @@
     "url": "https://github.com/johannschopplich/pdfjs-serverless/issues"
   },
   "keywords": [
+    "cloudflare",
+    "edge",
     "nodeless",
     "parse",
     "pdf",
+    "pdf.js",
     "pdfjs-dist",
     "serverless",
+    "text-extraction",
     "workers"
   ],
   "sideEffects": false,
@@ -43,7 +47,6 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.2.0",
-    "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^1.0.0",

@@ -1,13 +1,8 @@
 # pdfjs-serverless
 
-A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) for edge environments, like Cloudflare Workers. It is especially useful for serverless AI applications, where you want to parse PDF documents and extract text content.
+A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) as a single bundle for edge and serverless runtimes, like Cloudflare Workers. Use it as a drop-in replacement for `pdfjs-dist` to parse PDF documents and extract text content – no extra dependencies needed.
 
-This package comes with zero dependencies. The whole export is about 1.4 MB (minified).
-
-## PDF.js Compatibility
-
-> [!NOTE]
-> `pdfjs-serverless` is currently built from PDF.js v5.6.205.
+The whole export is about 1.6 MB (minified).
 
 ## Installation
 
@@ -15,13 +10,10 @@ Run the following command to add `pdfjs-serverless` to your project.
 
 ```bash
 # pnpm
-pnpm add -D pdfjs-serverless
+pnpm add pdfjs-serverless
 
 # npm
-npm install -D pdfjs-serverless
-
-# yarn
-yarn add -D pdfjs-serverless
+npm install pdfjs-serverless
 ```
 
 ## Usage
@@ -36,17 +28,15 @@ yarn add -D pdfjs-serverless
 + import { getDocument } from 'pdfjs-serverless'
 ```
 
-## Examples
-
-### 🌩 Cloudflare Workers
+Here's a full Cloudflare Workers example that accepts a PDF via POST and returns the extracted text as JSON:
 
 ```ts
+import { getDocument } from 'pdfjs-serverless'
+
 export default {
   async fetch(request) {
     if (request.method !== 'POST')
       return new Response('Method Not Allowed', { status: 405 })
-
-    const { getDocument } = await import('pdfjs-serverless')
 
     // Get the PDF file from the POST request body as a buffer
     const data = await request.arrayBuffer()
@@ -84,37 +74,17 @@ export default {
 }
 ```
 
-### 🦕 Deno
-
-```ts
-import { getDocument } from 'https://esm.sh/pdfjs-serverless'
-
-const data = Deno.readFileSync('sample.pdf')
-const document = await getDocument({
-  data,
-  useSystemFonts: true,
-}).promise
-
-console.log(await document.getMetadata())
-
-// Iterate through each page and fetch the text content
-for (let i = 1; i <= document.numPages; i++) {
-  const page = await document.getPage(i)
-  const textContent = await page.getTextContent()
-  const contents = textContent.items.map(item => item.str).join(' ')
-  console.log(contents)
-}
-```
-
 ## How It Works
 
-Heart and soul of this package is the [`rollup.config.ts`](./rollup.config.ts) file. It uses [`rollup`](https://rollupjs.org/) to bundle the PDF.js library into a single file that can be used in serverless environments.
+> [!NOTE]
+> `pdfjs-serverless` is currently built from PDF.js v5.6.205.
 
-The heavy lifting comes from string replacements of the `PDF.js` library, i.e. removing browser context references and checks such as `typeof window`. Additionally, we enforce Node.js compatibility (may sound paradoxical at first, bear with me), i.e. we mock the `@napi-rs/canvas` module and set the `isNodeJS` flag to `true`.
+Heart and soul of this package is the [`rollup.config.ts`](./rollup.config.ts) file. It uses [Rollup](https://rollupjs.org/) to bundle PDF.js into a single file for serverless environments. The key techniques:
 
-PDF.js uses a worker to parse PDF documents. This worker is a separate file that is loaded by the main library. For the serverless build, we need to inline the worker code into the main library.
-
-Finally, some mocks are added to the global scope that are not available in serverless environments, such as `FinalizationRegistry` which is not available in Cloudflare Workers.
+- **String replacements** strip browser-specific references (e.g. `typeof window`) from the PDF.js source.
+- **Node.js compatibility** is enforced by mocking `@napi-rs/canvas` and setting `isNodeJS` to `true` – paradoxical, but it unlocks the right code paths.
+- **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
+- **Global polyfills** provide missing APIs like `FinalizationRegistry` (unavailable in Cloudflare Workers).
 
 ## Inspiration
 

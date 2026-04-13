@@ -4,7 +4,7 @@ if (typeof globalThis.DOMMatrix === 'undefined') {
   globalThis.DOMMatrix = class DOMMatrix {}
 }
 
-// `FinalizationRegistry` is not not available in Cloudflare Workers.
+// `FinalizationRegistry` is not available in Cloudflare Workers.
 if (typeof globalThis.FinalizationRegistry === 'undefined') {
   globalThis.FinalizationRegistry = class FinalizationRegistry {
     register() {}
