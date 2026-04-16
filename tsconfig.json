@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
     "moduleDetection": "force",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "types": ["node"],
-    "strict": true,
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
     "verbatimModuleSyntax": true,
