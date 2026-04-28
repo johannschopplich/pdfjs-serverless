@@ -9,6 +9,12 @@ if (typeof Promise.withResolvers === 'undefined') {
   }
 }
 
+if (typeof Promise.try === 'undefined') {
+  Promise.try = function (fn, ...args) {
+    return new Promise(resolve => resolve(fn(...args)))
+  }
+}
+
 if (typeof Map.prototype.getOrInsertComputed === 'undefined') {
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(Map.prototype, 'getOrInsertComputed', {
