@@ -46,4 +46,63 @@ if (typeof Uint8Array.prototype.toHex === 'undefined') {
   })
 }
 
+if (
+  typeof ReadableStream !== 'undefined'
+  && typeof ReadableStream.prototype[Symbol.asyncIterator] === 'undefined'
+) {
+  const asyncIterator = function ({ preventCancel = false } = {}) {
+    const reader = this.getReader()
+    let isFinished = false
+    let ongoing = Promise.resolve()
+    const next = () => {
+      if (isFinished)
+        return Promise.resolve({ value: undefined, done: true })
+      return reader.read().then(
+        (result) => {
+          if (result.done) {
+            isFinished = true
+            reader.releaseLock()
+          }
+          return result
+        },
+        (error) => {
+          isFinished = true
+          reader.releaseLock()
+          throw error
+        },
+      )
+    }
+    const doReturn = (value) => {
+      if (isFinished)
+        return Promise.resolve({ value, done: true })
+      isFinished = true
+      if (preventCancel) {
+        reader.releaseLock()
+        return Promise.resolve({ value, done: true })
+      }
+      const cancelPromise = reader.cancel(value)
+      reader.releaseLock()
+      return cancelPromise.then(() => ({ value, done: true }))
+    }
+    return {
+      next() {
+        return (ongoing = ongoing.then(next, next))
+      },
+      return(value) {
+        return (ongoing = ongoing.then(() => doReturn(value), () => doReturn(value)))
+      },
+      [Symbol.asyncIterator]() {
+        return this
+      },
+    }
+  }
+  for (const key of [Symbol.asyncIterator, 'values']) {
+    Object.defineProperty(ReadableStream.prototype, key, {
+      value: asyncIterator,
+      writable: true,
+      configurable: true,
+    })
+  }
+}
+
 export const polyfills = true
