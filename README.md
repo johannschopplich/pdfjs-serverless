@@ -2,11 +2,9 @@
 
 A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) as a single bundle for edge and serverless runtimes, like Cloudflare Workers. Use it as a drop-in replacement for `pdfjs-dist` to parse PDF documents and extract text content – no extra dependencies needed.
 
-The whole export is about 1.6 MB (minified).
+The whole export is about 1.6 MB (minified) and ships the complete PDF.js type declarations.
 
 ## Installation
-
-Run the following command to add `pdfjs-serverless` to your project.
 
 ```bash
 # pnpm
@@ -74,6 +72,8 @@ export default {
 }
 ```
 
+Ready-to-run examples for Cloudflare Workers and Pages Functions live in [`examples/`](./examples).
+
 ## How It Works
 
 > [!NOTE]
@@ -81,10 +81,9 @@ export default {
 
 Heart and soul of this package is the [`rollup.config.ts`](./rollup.config.ts) file. It uses [Rollup](https://rollupjs.org/) to bundle PDF.js into a single file for serverless environments. The key techniques:
 
-- **String replacements** strip browser-specific references (e.g. `typeof window`) from the PDF.js source.
-- **Node.js compatibility** is enforced by mocking `@napi-rs/canvas` and setting `isNodeJS` to `true` – paradoxical, but it unlocks the right code paths.
+- **String replacements** rewrite the environment detection: `isNodeJS` becomes `typeof window === "undefined"`, so serverless runtimes take the Node.js code paths – paradoxical, but it unlocks the right branches. The unused `@napi-rs/canvas` import is mocked away the same way.
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
-- **Global polyfills** provide missing APIs like `FinalizationRegistry` (unavailable in Cloudflare Workers).
+- **Mocks and polyfills** provide missing globals: `DOMMatrix`, `navigator` and `FinalizationRegistry` are stubbed in [`src/mocks.mjs`](./src/mocks.mjs); `Promise.withResolvers`, `Uint8Array.prototype.toHex` and friends are polyfilled in [`src/polyfills.mjs`](./src/polyfills.mjs).
 
 ## Inspiration
 
