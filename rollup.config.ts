@@ -14,9 +14,7 @@ new Proxy({}, {
     }
   },
 })
-`
-  .replaceAll('\n', '')
-  .trim()
+`.trim()
 
 export default defineConfig({
   input: 'src/index.mjs',
