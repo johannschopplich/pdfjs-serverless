@@ -5,8 +5,8 @@
     "dev": "esbuild --bundle --platform=neutral --outfile=dist/index.js index.ts && wrangler dev dist/index.js"
   },
   "devDependencies": {
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "pdfjs-serverless": "workspace:*",
-    "wrangler": "^4.81.1"
+    "wrangler": "^4.114.0"
   }
 }

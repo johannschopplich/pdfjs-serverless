@@ -6,6 +6,6 @@
   },
   "devDependencies": {
     "pdfjs-serverless": "workspace:*",
-    "wrangler": "^4.81.1"
+    "wrangler": "^4.114.0"
   }
 }
