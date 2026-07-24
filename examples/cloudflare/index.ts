@@ -5,7 +5,7 @@ export default {
   async fetch() {
     const buffer = await fetch('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
       .then(res => res.arrayBuffer())
-    const document = await getDocument(new Uint8Array(buffer)).promise
+    const document = await getDocument({ data: new Uint8Array(buffer) }).promise
 
     const texts = await Promise.all(
       Array.from({ length: document.numPages }, (_, i) =>
