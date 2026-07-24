@@ -1,12 +1,17 @@
 import type { Plugin } from 'rolldown'
 import { writeFile } from 'node:fs/promises'
 
-// PDF.js' unused `NodeCanvasFactory` requires `@napi-rs/canvas`, which is not
-// available in serverless environments. Replace the require with a proxy that
-// throws a descriptive error should any of its members ever be accessed.
+// PDF.js' built-in `NodeCanvasFactory` requires `@napi-rs/canvas`, which is
+// not available in serverless environments. Bridge the require to a module
+// provided through a well-known global symbol, so consumers can opt into
+// rendering with an API-compatible canvas implementation; without one, keep
+// the descriptive error.
 const canvasMock = `
 new Proxy({}, {
   get(target, prop) {
+    const canvasModule = globalThis[Symbol.for("pdfjs-serverless.canvasModule")]
+    if (canvasModule)
+      return canvasModule[prop]
     return () => {
       throw new Error("@napi-rs/canvas is not available in this environment")
     }
@@ -29,7 +34,7 @@ const patches: Record<string, string> = {
   'if (!this.#modulePromise)': 'if (false)',
   '#instantiateWasm(fallbackCallback, imports, successCallback) {': '#instantiateWasm(fallbackCallback, imports, successCallback) { return;',
   '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
-  // Mock the `@napi-rs/canvas` module import from the unused `NodeCanvasFactory` class.
+  // Bridge the `@napi-rs/canvas` module import from the `NodeCanvasFactory` class.
   'require("@napi-rs/canvas")': canvasMock,
   // Remove the legacy build warning.
   'warn("Please use the `legacy` build in Node.js environments.")': '',
