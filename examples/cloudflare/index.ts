@@ -12,7 +12,7 @@ export default {
         getPageText(document, i + 1)),
     )
 
-    // Reduce whitespace to single space
+    // Collapse each run of whitespace to a single space.
     const formattedTexts = texts.map(text => text.replace(/\s+/g, ' ')).join('\n')
 
     return new Response(formattedTexts, {

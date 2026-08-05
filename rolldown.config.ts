@@ -1,4 +1,4 @@
-// This rolldown config builds a PDF.js bundle for serverless environments
+// This rolldown config builds a PDF.js bundle for serverless environments.
 
 import { defineConfig } from 'rolldown'
 import { patchPDFJSSource, pdfjsTypes } from './src/rolldown/plugins'
