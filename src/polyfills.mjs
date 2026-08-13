@@ -37,7 +37,7 @@ if (typeof Map.prototype.getOrInsertComputed === 'undefined') {
 }
 
 // `Uint8Array.prototype.toHex` is used by PDF.js v5.6+ for document fingerprints.
-// Not yet available in all runtimes (e.g. Node.js < 26, Cloudflare Workers).
+// Not yet available in Node.js < 26.
 if (typeof Uint8Array.prototype.toHex === 'undefined') {
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(Uint8Array.prototype, 'toHex', {
