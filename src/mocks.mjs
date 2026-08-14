@@ -16,6 +16,3 @@ if (typeof globalThis.FinalizationRegistry === 'undefined') {
 globalThis.navigator ??= {}
 globalThis.navigator.platform ??= ''
 globalThis.navigator.userAgent ??= ''
-
-// Export to ensure the mocks are not removed by tree-shaking.
-export const mocks = true

@@ -25,8 +25,8 @@ new Proxy({}, {
 const patches: Record<string, string> = {
   // Mimick Node.js environment.
   'const isNodeJS = typeof': 'const isNodeJS = typeof window === "undefined" // typeof',
-  // Force inlining the PDF.js worker.
-  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': '__pdfjsWorker__',
+  // Take the inlined worker from its global instead of importing it at runtime.
+  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': 'globalThis.pdfjsWorker',
   // Force setting up fake PDF.js worker.
   '#isWorkerDisabled = false': '#isWorkerDisabled = true',
   // Remove WASM code from the worker.
@@ -80,6 +80,47 @@ export function patchPDFJSSource(): Plugin {
           + `so the PDF.js source has likely drifted:\n${
             missedAnchors.map(anchor => `  - ${JSON.stringify(anchor)}`).join('\n')}`,
         )
+      }
+    },
+  }
+}
+
+/**
+ * Asserts that the modules patching the runtime are bundled and evaluated
+ * before the first PDF.js module. They export nothing, so tree-shaking drops
+ * them as soon as the side-effect rule stops matching, and their position in
+ * the entry file is a convention nothing else enforces. Either failure leaves
+ * PDF.js reaching for globals that are not there, so the build fails loudly
+ * instead.
+ */
+export function assertRuntimePatchesFirst(): Plugin {
+  const runtimePatches = ['mocks.mjs', 'polyfills.mjs']
+
+  return {
+    name: 'pdfjs-serverless:assert-runtime-patches-first',
+    generateBundle(_options, bundle) {
+      // Rolldown lists a chunk's modules in evaluation order.
+      const moduleIds = Object.values(bundle)
+        .flatMap(output => (output.type === 'chunk' ? output.moduleIds : []))
+        .map(id => id.replaceAll('\\', '/'))
+      const firstPDFJSIndex = moduleIds.findIndex(id => id.includes('/pdfjs-dist/'))
+
+      for (const filename of runtimePatches) {
+        const index = moduleIds.findIndex(id => id.endsWith(`/src/${filename}`))
+
+        if (index === -1) {
+          throw new Error(
+            `[pdfjs-serverless] ${filename} was tree-shaken out of the bundle, `
+            + `so PDF.js runs against an unpatched runtime.`,
+          )
+        }
+
+        if (firstPDFJSIndex !== -1 && index > firstPDFJSIndex) {
+          throw new Error(
+            `[pdfjs-serverless] ${filename} is evaluated after PDF.js, `
+            + `so its globals land too late.`,
+          )
+        }
       }
     },
   }

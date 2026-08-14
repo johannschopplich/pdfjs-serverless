@@ -133,5 +133,3 @@ if (
     })
   }
 }
-
-export const polyfills = true
