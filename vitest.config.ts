@@ -4,35 +4,8 @@ import * as path from 'node:path'
 import { cloudflareTest } from '@cloudflare/vitest-pool-workers'
 import { defineConfig } from 'vitest/config'
 
-const bytesRE = /[?&]bytes\b/
-
-// A fresh instance per project – a plugin object cannot be shared across two
-// Vite configs.
-function inlineBytes(): Plugin {
-  return {
-    name: 'vite-plugin-bytes',
-    enforce: 'pre',
-    resolveId(source, importer) {
-      if (!bytesRE.test(source) || !importer)
-        return
-      const file = source.replace(/[?#].*$/, '')
-      const resolved = path.resolve(path.dirname(importer.replace(/[?#].*$/, '')), file)
-      return `${resolved}?bytes`
-    },
-    async load(id) {
-      if (!bytesRE.test(id))
-        return
-      const file = id.replace(/[?#].*$/, '')
-      const base64 = (await fsp.readFile(file)).toString('base64')
-      return `export default Uint8Array.from(atob("${base64}"), c => c.charCodeAt(0));`
-    },
-  }
-}
-
 export default defineConfig({
   test: {
-    // workerd provides every API `src/polyfills.mjs` shims, so only the Node.js
-    // project exercises them.
     projects: [
       {
         plugins: [
@@ -58,3 +31,26 @@ export default defineConfig({
     ],
   },
 })
+
+const BYTES_RE = /[?&]bytes\b/
+
+function inlineBytes(): Plugin {
+  return {
+    name: 'vite-plugin-bytes',
+    enforce: 'pre',
+    resolveId(source, importer) {
+      if (!BYTES_RE.test(source) || !importer)
+        return
+      const file = source.replace(/[?#].*$/, '')
+      const resolved = path.resolve(path.dirname(importer.replace(/[?#].*$/, '')), file)
+      return `${resolved}?bytes`
+    },
+    async load(id) {
+      if (!BYTES_RE.test(id))
+        return
+      const file = id.replace(/[?#].*$/, '')
+      const base64 = (await fsp.readFile(file)).toString('base64')
+      return `export default Uint8Array.from(atob("${base64}"), c => c.charCodeAt(0));`
+    },
+  }
+}
