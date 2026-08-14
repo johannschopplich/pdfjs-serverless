@@ -4,7 +4,7 @@ import { getDocument } from '../dist/index.mjs'
 import samplePdf from './fixtures/sample.pdf?bytes'
 
 describe('pdfjs-serverless', () => {
-  it('loads and parses a PDF in workerd', async () => {
+  it('loads and parses a PDF', async () => {
     const doc = await getDocument({ data: samplePdf }).promise
     expect(doc.numPages).toBe(1)
 
