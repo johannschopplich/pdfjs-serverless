@@ -23,7 +23,7 @@ new Proxy({}, {
 // matched verbatim, every occurrence replaced. The worker anchor carries its
 // exact multi-line indentation on purpose.
 const patches: Record<string, string> = {
-  // Mimick Node.js environment.
+  // Take the Node.js code paths wherever `window` is missing.
   'const isNodeJS = typeof': 'const isNodeJS = typeof window === "undefined" // typeof',
   // Take the inlined worker from its global instead of importing it at runtime.
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': 'globalThis.pdfjsWorker',
