@@ -9,7 +9,7 @@ describe('pdfjs-serverless', () => {
     expect(doc.numPages).toBe(1)
 
     const page = await doc.getPage(1)
-    const textContent = await page.getTextContent()
-    expect(textContent.items.length).toBeGreaterThan(0)
+    const { items } = await page.getTextContent()
+    expect(items[0]).toHaveProperty('str', 'Dummy PDF file')
   })
 })
