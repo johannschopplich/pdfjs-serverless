@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.2.0",
-    "@cloudflare/vitest-pool-workers": "^0.18.8",
+    "@cloudflare/vitest-plugin": "^1.4.3",
     "@types/node": "^26.1.1",
     "bumpp": "^12.0.0",
     "eslint": "^10.7.0",

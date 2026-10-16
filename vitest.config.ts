@@ -1,7 +1,7 @@
 import type { Plugin } from 'vitest/config'
 import * as fsp from 'node:fs/promises'
 import * as path from 'node:path'
-import { cloudflareTest } from '@cloudflare/vitest-pool-workers'
+import { cloudflareTest } from '@cloudflare/vitest-plugin'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
