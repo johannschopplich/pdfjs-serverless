@@ -19,7 +19,7 @@ npm install pdfjs-serverless
 > [!TIP]
 > For common operations, such as extracting text content or images from PDF files, you can use the [`unpdf` package](https://github.com/unjs/unpdf). It is a wrapper around `pdfjs-serverless` and provides a simple API for common use cases.
 
-`pdfjs-serverless` provides the same API as the original PDF.js library. To use any of the PDF.js exports, rename the import to `pdfjs-serverless` instead of `pdfjs-dist`:
+Swap the import from `pdfjs-dist` to `pdfjs-serverless`:
 
 ```diff
 - import { getDocument } from 'pdfjs-dist'
@@ -36,39 +36,18 @@ export default {
     if (request.method !== 'POST')
       return new Response('Method Not Allowed', { status: 405 })
 
-    // Get the PDF file from the POST request body as a buffer
-    const data = await request.arrayBuffer()
+    const data = new Uint8Array(await request.arrayBuffer())
+    const document = await getDocument({ data, useSystemFonts: true }).promise
 
-    const document = await getDocument({
-      data: new Uint8Array(data),
-      useSystemFonts: true,
-    }).promise
-
-    // Get metadata and initialize output object
-    const metadata = await document.getMetadata()
-    const output = {
-      metadata,
-      pages: []
+    const pages = []
+    for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber++) {
+      const page = await document.getPage(pageNumber)
+      const { items } = await page.getTextContent()
+      pages.push({ pageNumber, content: items.map(item => item.str).join(' ') })
     }
 
-    // Iterate through each page and fetch the text content
-    for (let i = 1; i <= document.numPages; i++) {
-      const page = await document.getPage(i)
-      const textContent = await page.getTextContent()
-      const contents = textContent.items.map(item => item.str).join(' ')
-
-      // Add page content to output
-      output.pages.push({
-        pageNumber: i,
-        content: contents
-      })
-    }
-
-    // Return the results as JSON
-    return new Response(JSON.stringify(output), {
-      headers: { 'Content-Type': 'application/json' }
-    })
-  }
+    return Response.json({ metadata: await document.getMetadata(), pages })
+  },
 }
 ```
 
