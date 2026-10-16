@@ -10,19 +10,7 @@ on:
       - main
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install
-      - run: pnpm run lint
-
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -33,4 +21,48 @@ jobs:
           cache: pnpm
       - run: pnpm install
       - run: pnpm run build
-      - run: pnpm test
+      - run: pnpm run test:types:dist
+      - run: pnpm run lint
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+
+  test:
+    name: test (${{ matrix.runtime }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: Node.js 22
+            node-version: 22
+            command: pnpm exec vitest run --project node
+          - runtime: Node.js 24
+            node-version: 24
+            command: pnpm exec vitest run --project node
+          - runtime: Node.js 26
+            node-version: 26
+            command: pnpm exec vitest run --project node
+          - runtime: Bun
+            node-version: 24
+            command: bun --bun vitest run --project node
+          - runtime: Cloudflare Workers
+            node-version: 24
+            command: pnpm exec vitest run --project workerd
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+      - uses: oven-sh/setup-bun@v2
+        if: matrix.runtime == 'Bun'
+      - run: pnpm install
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - run: ${{ matrix.command }}
