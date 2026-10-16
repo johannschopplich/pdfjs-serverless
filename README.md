@@ -51,7 +51,7 @@ export default {
 }
 ```
 
-Ready-to-run examples for Cloudflare Workers and Pages Functions live in [`examples/`](./examples).
+A ready-to-run Cloudflare Workers example lives in [`examples/cloudflare`](./examples/cloudflare).
 
 ### Rendering Pages
 
