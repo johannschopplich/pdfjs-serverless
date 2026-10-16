@@ -2,7 +2,7 @@
 
 A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) as a single bundle for edge and serverless runtimes, like Cloudflare Workers. Use it as a drop-in replacement for `pdfjs-dist` to parse PDF documents and extract text content – no extra dependencies needed.
 
-The whole export is about 1.6 MB (minified) and ships the complete PDF.js type declarations.
+The whole export is about 1.7 MB (minified), ships the complete PDF.js type declarations, and is tested in Node.js 22+, Bun, and Cloudflare Workers.
 
 ## Installation
 
@@ -74,6 +74,29 @@ export default {
 
 Ready-to-run examples for Cloudflare Workers and Pages Functions live in [`examples/`](./examples).
 
+### Rendering Pages
+
+Rendering needs a canvas implementation, which serverless runtimes like Cloudflare Workers lack. In Node.js, hand [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) to the bundle through a well-known global symbol and expose its `Path2D`:
+
+```ts
+import { writeFile } from 'node:fs/promises'
+import * as canvas from '@napi-rs/canvas'
+import { getDocument } from 'pdfjs-serverless'
+
+globalThis[Symbol.for('pdfjs-serverless.canvasModule')] = canvas
+globalThis.Path2D ??= canvas.Path2D
+
+const document = await getDocument({ data }).promise
+const page = await document.getPage(1)
+const viewport = page.getViewport({ scale: 2 })
+const target = canvas.createCanvas(viewport.width, viewport.height)
+
+await page.render({ canvas: target, canvasContext: target.getContext('2d'), viewport }).promise
+await writeFile('page-1.png', await target.encode('png'))
+```
+
+Without a canvas module, rendering throws a descriptive error.
+
 ## How It Works
 
 > [!NOTE]
@@ -81,7 +104,7 @@ Ready-to-run examples for Cloudflare Workers and Pages Functions live in [`examp
 
 Heart and soul of this package is the [`rolldown.config.ts`](./rolldown.config.ts) file. It uses [Rolldown](https://rolldown.rs/) to bundle PDF.js into a single file for serverless environments. The key techniques:
 
-- **String replacements** rewrite the environment detection: `isNodeJS` becomes `typeof window === "undefined"`, so serverless runtimes take the Node.js code paths – paradoxical, but it unlocks the right branches. The `@napi-rs/canvas` import is bridged to `globalThis[Symbol.for("pdfjs-serverless.canvasModule")]` – assign an API-compatible canvas module to that symbol to enable rendering, otherwise accessing it throws a descriptive error.
+- **String replacements** rewrite the environment detection: `isNodeJS` becomes `typeof window === "undefined"`, so serverless runtimes take the Node.js code paths – paradoxical, but it unlocks the right branches. The `@napi-rs/canvas` import is bridged to a global symbol (see [Rendering Pages](#rendering-pages)).
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
 - **Mocks and polyfills** provide missing globals: `DOMMatrix`, `navigator` and `FinalizationRegistry` are stubbed in [`src/mocks.mjs`](./src/mocks.mjs); `Promise.try`, `Map.prototype.getOrInsert`, `Uint8Array.prototype.toHex` and friends are polyfilled in [`src/polyfills.mjs`](./src/polyfills.mjs).
 
