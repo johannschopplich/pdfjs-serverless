@@ -41,10 +41,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "build:pre": "rolldown --config rolldown.config.ts",
-    "build:post": "cp -R node_modules/pdfjs-dist/types dist",
-    "build": "pnpm run build:pre && pnpm run build:post",
+    "build": "rolldown --config rolldown.config.ts",
     "test": "vitest",
+    "test:types:dist": "tsc -p test/types/tsconfig.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "bumpp"

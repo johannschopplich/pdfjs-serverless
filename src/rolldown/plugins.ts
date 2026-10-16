@@ -1,5 +1,5 @@
 import type { Plugin } from 'rolldown'
-import { writeFile } from 'node:fs/promises'
+import { cp, readdir, readFile, writeFile } from 'node:fs/promises'
 
 // PDF.js' built-in `NodeCanvasFactory` requires `@napi-rs/canvas`, which is
 // not available in serverless environments. Bridge the require to a module
@@ -130,8 +130,13 @@ export function pdfjsTypes(): Plugin {
   return {
     name: 'pdfjs-serverless:types',
     async writeBundle() {
+      await cp('node_modules/pdfjs-dist/types', 'dist/types', { recursive: true })
+      await explicitImportExtensions('dist/types')
+
+      // The explicit `.js` extensions keep the declarations resolvable under
+      // `moduleResolution: "nodenext"`.
       const typeExports = `
-import * as PDFJS from './types/src/pdf'
+import * as PDFJS from './types/src/pdf.js'
 
 /**
  * @deprecated Import from \`pdfjs-serverless\` instead. Will be removed in v2.
@@ -151,11 +156,36 @@ import * as PDFJS from './types/src/pdf'
 declare function resolvePDFJS(): Promise<typeof PDFJS>
 
 export { resolvePDFJS }
-export * from './types/src/pdf'
-export type { TextContent, TextItem, TextMarkedContent, TextStyle } from './types/src/display/api'
+export * from './types/src/pdf.js'
+export type { TextContent, TextItem, TextMarkedContent, TextStyle } from './types/src/display/api.js'
 `.trimStart()
 
       await writeFile('dist/index.d.mts', typeExports, 'utf8')
     },
+  }
+}
+
+/**
+ * Appends the missing `.js` extensions to the relative imports of the
+ * declarations copied from `pdfjs-dist`. They are generated from JSDoc and
+ * partly reference sibling modules without extensions, which resolve to error
+ * types under `moduleResolution: "nodenext"`.
+ */
+async function explicitImportExtensions(directory: string) {
+  const filenames = await readdir(directory, { recursive: true })
+
+  for (const filename of filenames) {
+    if (!filename.endsWith('.d.ts'))
+      continue
+
+    const filePath = `${directory}/${filename}`
+    const content = await readFile(filePath, 'utf8')
+    const patchedContent = content.replace(
+      /(from\s+|import\()(["'])(\.[^"']+?)(?:\.js)?\2/g,
+      (_, importPrefix, quote, specifier) => `${importPrefix}${quote}${specifier}.js${quote}`,
+    )
+
+    if (patchedContent !== content)
+      await writeFile(filePath, patchedContent, 'utf8')
   }
 }
