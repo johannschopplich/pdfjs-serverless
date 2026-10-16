@@ -8,11 +8,18 @@ export default defineConfig({
   test: {
     projects: [
       {
+        plugins: [inlineBytes()],
+        test: {
+          name: 'node',
+          setupFiles: ['./test/setup.ts'],
+        },
+      },
+      {
         plugins: [
           inlineBytes(),
           cloudflareTest({
             wrangler: {
-              configPath: './wrangler.jsonc',
+              configPath: './test/wrangler.jsonc',
             },
           }),
         ],
@@ -21,32 +28,25 @@ export default defineConfig({
           setupFiles: ['./test/setup.ts'],
         },
       },
-      {
-        plugins: [inlineBytes()],
-        test: {
-          name: 'node',
-          setupFiles: ['./test/setup.ts'],
-        },
-      },
     ],
   },
 })
 
-const BYTES_RE = /[?&]bytes\b/
+const BYTES_QUERY_PATTERN = /[?&]bytes(?:&|$)/
 
 function inlineBytes(): Plugin {
   return {
-    name: 'vite-plugin-bytes',
+    name: 'inline-bytes',
     enforce: 'pre',
     resolveId(source, importer) {
-      if (!BYTES_RE.test(source) || !importer)
+      if (!BYTES_QUERY_PATTERN.test(source) || !importer)
         return
       const file = source.replace(/[?#].*$/, '')
       const resolved = path.resolve(path.dirname(importer.replace(/[?#].*$/, '')), file)
       return `${resolved}?bytes`
     },
     async load(id) {
-      if (!BYTES_RE.test(id))
+      if (!BYTES_QUERY_PATTERN.test(id))
         return
       const file = id.replace(/[?#].*$/, '')
       const base64 = (await fsp.readFile(file)).toString('base64')
