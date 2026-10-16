@@ -77,13 +77,13 @@ Ready-to-run examples for Cloudflare Workers and Pages Functions live in [`examp
 ## How It Works
 
 > [!NOTE]
-> `pdfjs-serverless` is currently built from PDF.js v5.6.205.
+> `pdfjs-serverless` is built from PDF.js v6.4.299. It requires the global `Iterator` constructor (Safari 18.4+); without it, importing the bundle throws.
 
 Heart and soul of this package is the [`rolldown.config.ts`](./rolldown.config.ts) file. It uses [Rolldown](https://rolldown.rs/) to bundle PDF.js into a single file for serverless environments. The key techniques:
 
 - **String replacements** rewrite the environment detection: `isNodeJS` becomes `typeof window === "undefined"`, so serverless runtimes take the Node.js code paths – paradoxical, but it unlocks the right branches. The `@napi-rs/canvas` import is bridged to `globalThis[Symbol.for("pdfjs-serverless.canvasModule")]` – assign an API-compatible canvas module to that symbol to enable rendering, otherwise accessing it throws a descriptive error.
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
-- **Mocks and polyfills** provide missing globals: `DOMMatrix`, `navigator` and `FinalizationRegistry` are stubbed in [`src/mocks.mjs`](./src/mocks.mjs); `Promise.withResolvers`, `Uint8Array.prototype.toHex` and friends are polyfilled in [`src/polyfills.mjs`](./src/polyfills.mjs).
+- **Mocks and polyfills** provide missing globals: `DOMMatrix`, `navigator` and `FinalizationRegistry` are stubbed in [`src/mocks.mjs`](./src/mocks.mjs); `Promise.try`, `Map.prototype.getOrInsert`, `Uint8Array.prototype.toHex` and friends are polyfilled in [`src/polyfills.mjs`](./src/polyfills.mjs).
 
 ## Inspiration
 
