@@ -20,8 +20,7 @@ export default defineConfig({
     // file as PDF.js itself, so everything must land in a single chunk.
     codeSplitting: false,
     sourcemap: false,
-    // PDF.js relies on `Function.prototype.name`/class names at runtime – the
-    // minifier must preserve them.
+    // PDF.js reads function and class names at runtime.
     minify: {
       compress: {
         target: 'es2022',

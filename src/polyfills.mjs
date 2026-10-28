@@ -1,4 +1,4 @@
-// Promise polyfill for Node.js < 22 and some browsers.
+// `Promise.withResolvers` is not available in Safari < 17.4.
 if (typeof Promise.withResolvers === 'undefined') {
   Promise.withResolvers = function () {
     let resolve, reject
