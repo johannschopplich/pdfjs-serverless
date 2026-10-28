@@ -2,7 +2,7 @@
 
 A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) as a single bundle for edge and serverless runtimes, like Cloudflare Workers. Use it as a drop-in replacement for `pdfjs-dist` to parse PDF documents and extract text content – no extra dependencies needed.
 
-The whole export is about 1.7 MB (minified), ships the complete PDF.js type declarations, and is tested in Node.js 22+, Bun, and Cloudflare Workers.
+The whole export is about 1.7 MB (minified), ships the complete PDF.js type declarations, and is tested in Node.js 24+, Bun, and Cloudflare Workers.
 
 ## Installation
 
