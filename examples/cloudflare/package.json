@@ -2,7 +2,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "esbuild --bundle --platform=neutral --outfile=dist/index.js index.ts && wrangler dev dist/index.js"
+    "dev": "esbuild --bundle --platform=neutral --conditions=workerd --outfile=dist/index.js index.ts && wrangler dev dist/index.js"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",
