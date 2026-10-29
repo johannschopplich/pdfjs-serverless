@@ -12,13 +12,15 @@ export default defineConfig({
       { test: /[\\/]src[\\/](mocks|polyfills)\.mjs$/, sideEffects: true },
     ],
   },
+  moduleTypes: {
+    '.wasm': 'binary',
+  },
   output: {
-    file: 'dist/index.mjs',
+    dir: 'dist',
+    entryFileNames: 'index.mjs',
+    chunkFileNames: 'pdfjs-[name].mjs',
     format: 'esm',
     exports: 'auto',
-    // The worker is pulled in via a static import and has to end up in the same
-    // file as PDF.js itself, so everything must land in a single chunk.
-    codeSplitting: false,
     sourcemap: false,
     // PDF.js reads function and class names at runtime.
     minify: {

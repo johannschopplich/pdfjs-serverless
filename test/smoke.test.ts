@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 // eslint-disable-next-line antfu/no-import-dist
 import { getDocument } from '../dist/index.mjs'
+import imageDecodersPdf from './fixtures/image-decoders.pdf?bytes'
 import samplePdf from './fixtures/sample.pdf?bytes'
 
 describe('pdfjs-serverless', () => {
@@ -11,5 +12,21 @@ describe('pdfjs-serverless', () => {
     const page = await doc.getPage(1)
     const { items } = await page.getTextContent()
     expect(items[0]).toHaveProperty('str', 'Dummy PDF file')
+  })
+
+  it('decodes CCITT and JPEG 2000 images', async () => {
+    const doc = await getDocument({ data: imageDecodersPdf }).promise
+    const page = await doc.getPage(1)
+    await page.getOperatorList()
+    const images = await Promise.all(
+      ['img_p0_1', 'img_p0_2'].map(name => new Promise<any>(resolve => page.objs.get(name, resolve))),
+    )
+
+    expect(images.map(({ width, height, data }) => ({ width, height, data: Array.from(data) }))).toEqual([
+      // One bit per pixel: black on the left in the top two rows, on the right in the bottom two.
+      { width: 16, height: 4, data: [0x00, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0x00] },
+      // RGBA: red, blue.
+      { width: 2, height: 1, data: [255, 0, 0, 255, 0, 0, 255, 255] },
+    ])
   })
 })

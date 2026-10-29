@@ -1,5 +1,6 @@
-import type { Plugin } from 'rolldown'
+import type { OutputBundle, OutputChunk, Plugin } from 'rolldown'
 import { cp, readdir, readFile, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 // PDF.js' built-in `NodeCanvasFactory` requires `@napi-rs/canvas`, which is
 // not available in serverless environments. Bridge the require to a module
@@ -19,8 +20,10 @@ new Proxy({}, {
 })
 `.trim()
 
-// Anchors match verbatim, so the worker anchor carries the exact multi-line
-// indentation of the PDF.js source.
+const decodersModuleSpecifier = JSON.stringify(join(import.meta.dirname, '../decoders.mjs'))
+
+// Anchors match verbatim, so multi-line anchors carry the exact indentation of
+// the PDF.js source.
 const patches: Record<string, string> = {
   // Take the Node.js code paths wherever `window` is missing.
   'const isNodeJS = typeof': 'const isNodeJS = typeof window === "undefined" // typeof',
@@ -28,11 +31,12 @@ const patches: Record<string, string> = {
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      this.workerSrc)': 'globalThis.pdfjsWorker',
   // Force setting up fake PDF.js worker.
   '#isWorkerDisabled = false': '#isWorkerDisabled = true',
-  // Remove WASM code from the worker.
-  'wasmExports = await createWasm': 'wasmExports = {}',
-  'if (!this.#modulePromise)': 'if (false)',
-  '#instantiateWasm(fallbackCallback, imports, successCallback) {': '#instantiateWasm(fallbackCallback, imports, successCallback) { return;',
-  '#getJsModule(fallbackCallback) {': '#getJsModule(fallbackCallback) { return;',
+  // Load the image decoders and their JS fallbacks from the bundle instead of
+  // `wasmUrl`.
+  /* eslint-disable no-template-curly-in-string -- The anchors match template literals in the PDF.js source. */
+  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await (await import(${decodersModuleSpecifier})).loadDecoder(this._filename);`,
+  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await (await import(${decodersModuleSpecifier})).loadDecoder(this._noWasmFilename) }`,
+  /* eslint-enable no-template-curly-in-string */
   'require("@napi-rs/canvas")': canvasMock,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
@@ -96,9 +100,12 @@ export function assertRuntimePatchesFirst(): Plugin {
   return {
     name: 'pdfjs-serverless:assert-runtime-patches-first',
     generateBundle(_options, bundle) {
-      // Rolldown lists a chunk's modules in evaluation order.
-      const moduleIds = Object.values(bundle)
-        .flatMap(output => (output.type === 'chunk' ? output.moduleIds : []))
+      // Rolldown lists a chunk's modules in evaluation order, and the chunks
+      // a chunk imports statically evaluate before it. The lazy decoder chunks
+      // hold `pdfjs-dist` modules too, but never evaluate eagerly.
+      const entryChunk = Object.values(bundle).find(output => output.type === 'chunk' && output.isEntry) as OutputChunk
+      const moduleIds = collectStaticChunks(entryChunk, bundle)
+        .flatMap(chunk => chunk.moduleIds)
         .map(id => id.replaceAll('\\', '/'))
       const firstPDFJSIndex = moduleIds.findIndex(id => id.includes('/pdfjs-dist/'))
 
@@ -160,6 +167,29 @@ export type { TextContent, TextItem, TextMarkedContent, TextStyle } from './type
       await writeFile('dist/index.d.mts', typeExports, 'utf8')
     },
   }
+}
+
+/**
+ * Collects a chunk and every chunk it reaches through static imports, in
+ * evaluation order. External imports have no chunk in the bundle and are
+ * skipped.
+ */
+function collectStaticChunks(entryChunk: OutputChunk, bundle: OutputBundle): OutputChunk[] {
+  const visitedChunks = new Set<OutputChunk>()
+  const orderedChunks: OutputChunk[] = []
+
+  const visit = (chunk: OutputChunk) => {
+    visitedChunks.add(chunk)
+    for (const fileName of chunk.imports) {
+      const importedChunk = bundle[fileName]
+      if (importedChunk?.type === 'chunk' && !visitedChunks.has(importedChunk))
+        visit(importedChunk)
+    }
+    orderedChunks.push(chunk)
+  }
+
+  visit(entryChunk)
+  return orderedChunks
 }
 
 /**
