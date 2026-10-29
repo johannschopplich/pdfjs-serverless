@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 // eslint-disable-next-line antfu/no-import-dist
 import { getDocument } from '../dist/index.mjs'
 import imageDecodersPdf from './fixtures/image-decoders.pdf?bytes'
@@ -14,7 +14,8 @@ describe('pdfjs-serverless', () => {
     expect(items[0]).toHaveProperty('str', 'Dummy PDF file')
   })
 
-  it('decodes CCITT and JPEG 2000 images', async () => {
+  it('decodes CCITT and JPEG 2000 images without warnings', async () => {
+    const consoleWarnSpy = vi.spyOn(console, 'warn')
     const doc = await getDocument({ data: imageDecodersPdf }).promise
     const page = await doc.getPage(1)
     await page.getOperatorList()
@@ -22,6 +23,7 @@ describe('pdfjs-serverless', () => {
       ['img_p0_1', 'img_p0_2'].map(name => new Promise<any>(resolve => page.objs.get(name, resolve))),
     )
 
+    expect(consoleWarnSpy).not.toHaveBeenCalled()
     expect(images.map(({ width, height, data }) => ({ width, height, data: Array.from(data) }))).toEqual([
       // One bit per pixel: black on the left in the top two rows, on the right in the bottom two.
       { width: 16, height: 4, data: [0x00, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0x00] },

@@ -85,7 +85,7 @@ Heart and soul of this package is the [`rolldown.config.ts`](./rolldown.config.t
 
 - **String replacements** rewrite the environment detection: `isNodeJS` becomes `typeof window === "undefined"`, so serverless runtimes take the Node.js code paths – paradoxical, but it unlocks the right branches. The `@napi-rs/canvas` import is bridged to a global symbol (see [Rendering Pages](#rendering-pages)).
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
-- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`.
+- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. Where the runtime can't compile WASM, as in Cloudflare Workers, the bundle turns `useWasm` off and the JS decoders take over.
 - **Mocks and polyfills** provide missing globals: `DOMMatrix`, `navigator` and `FinalizationRegistry` are stubbed in [`src/mocks.mjs`](./src/mocks.mjs); `Promise.try`, `Map.prototype.getOrInsert`, `Uint8Array.prototype.toHex` and friends are polyfilled in [`src/polyfills.mjs`](./src/polyfills.mjs).
 
 ## Inspiration

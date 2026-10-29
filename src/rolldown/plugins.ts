@@ -37,6 +37,10 @@ const patches: Record<string, string> = {
   'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await (await import(${decodersModuleSpecifier})).loadDecoder(this._filename);`,
   'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await (await import(${decodersModuleSpecifier})).loadDecoder(this._noWasmFilename) }`,
   /* eslint-enable no-template-curly-in-string */
+  // Where the runtime forbids compiling WASM, as workerd does, PDF.js would warn
+  // once per image decoder before falling back to its JS decoders. The probe
+  // compiles the smallest valid module: the magic number and version 1.
+  'const useWasm = src.useWasm !== false;': 'const useWasm = src.useWasm !== false && (() => { try { new WebAssembly.Module(new Uint8Array([0x00, 0x61, 0x73, 0x6D, 0x01, 0x00, 0x00, 0x00])); return true } catch { return false } })();',
   'require("@napi-rs/canvas")': canvasMock,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
