@@ -1,8 +1,13 @@
 import { defineConfig } from 'rolldown'
-import { assertRuntimePatchesFirst, patchPDFJSSource, pdfjsTypes } from './src/rolldown/plugins'
+import { assertRuntimePatchesFirst, decodersModuleSpecifier, patchPDFJSSource, pdfjsTypes } from './src/rolldown/plugins'
 
 export default defineConfig({
-  input: 'src/index.mjs',
+  input: {
+    'index': 'src/index.mjs',
+    'pdfjs-decoders': 'src/decoders/default.mjs',
+    'pdfjs-decoders-workerd': 'src/decoders/workerd.mjs',
+  },
+  external: [decodersModuleSpecifier],
   // The root `"sideEffects": false` applies to the sources read here too, which
   // would drop the mock and polyfill modules whose only job is to mutate
   // globals. Only an explicit rule outranks the manifest – a blanket
@@ -17,7 +22,7 @@ export default defineConfig({
   },
   output: {
     dir: 'dist',
-    entryFileNames: 'index.mjs',
+    entryFileNames: '[name].mjs',
     chunkFileNames: 'pdfjs-[name].mjs',
     format: 'esm',
     exports: 'auto',

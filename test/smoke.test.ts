@@ -31,4 +31,12 @@ describe('pdfjs-serverless', () => {
       { width: 2, height: 1, data: [255, 0, 0, 255, 0, 0, 255, 255] },
     ])
   })
+
+  it.runIf(globalThis.navigator?.userAgent === 'Cloudflare-Workers')('leaves jbig2.wasm and openjpeg.wasm out of #pdfjs-decoders under the workerd condition', async () => {
+    // @ts-expect-error: Dynamic import from package build.
+    const { loadDecoder } = await import('#pdfjs-decoders')
+
+    await expect(loadDecoder('jbig2.wasm')).rejects.toThrow('No bundled decoder for jbig2.wasm')
+    await expect(loadDecoder('openjpeg.wasm')).rejects.toThrow('No bundled decoder for openjpeg.wasm')
+  })
 })

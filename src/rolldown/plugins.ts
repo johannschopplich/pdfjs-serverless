@@ -1,6 +1,5 @@
 import type { OutputBundle, OutputChunk, Plugin } from 'rolldown'
 import { cp, readdir, readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
 
 // PDF.js' built-in `NodeCanvasFactory` requires `@napi-rs/canvas`, which is
 // not available in serverless environments. Bridge the require to a module
@@ -20,7 +19,9 @@ new Proxy({}, {
 })
 `.trim()
 
-const decodersModuleSpecifier = JSON.stringify(join(import.meta.dirname, '../decoders.mjs'))
+// Resolved through the `imports` field of `package.json`, so the consumer's
+// bundler or runtime picks the decoder variant by condition.
+export const decodersModuleSpecifier = '#pdfjs-decoders'
 
 // Anchors match verbatim, so multi-line anchors carry the exact indentation of
 // the PDF.js source.
@@ -34,8 +35,8 @@ const patches: Record<string, string> = {
   // Load the image decoders and their JS fallbacks from the bundle instead of
   // `wasmUrl`.
   /* eslint-disable no-template-curly-in-string -- The anchors match template literals in the PDF.js source. */
-  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await (await import(${decodersModuleSpecifier})).loadDecoder(this._filename);`,
-  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await (await import(${decodersModuleSpecifier})).loadDecoder(this._noWasmFilename) }`,
+  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await (await import("${decodersModuleSpecifier}")).loadDecoder(this._filename);`,
+  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await (await import("${decodersModuleSpecifier}")).loadDecoder(this._noWasmFilename) }`,
   /* eslint-enable no-template-curly-in-string */
   // Where the runtime forbids compiling WASM, as workerd does, PDF.js would warn
   // once per image decoder before falling back to its JS decoders. The probe
@@ -107,7 +108,10 @@ export function assertRuntimePatchesFirst(): Plugin {
       // Rolldown lists a chunk's modules in evaluation order, and the chunks
       // a chunk imports statically evaluate before it. The lazy decoder chunks
       // hold `pdfjs-dist` modules too, but never evaluate eagerly.
-      const entryChunk = Object.values(bundle).find(output => output.type === 'chunk' && output.isEntry) as OutputChunk
+      const entryChunk = Object.values(bundle).find((output): output is OutputChunk => output.type === 'chunk' && output.isEntry && output.name === 'index')
+      if (!entryChunk)
+        throw new Error(`[pdfjs-serverless] The bundle has no \`index\` entry chunk to check.`)
+
       const moduleIds = collectStaticChunks(entryChunk, bundle)
         .flatMap(chunk => chunk.moduleIds)
         .map(id => id.replaceAll('\\', '/'))
