@@ -4,17 +4,18 @@ import { assertRuntimePatchesFirst, decodersModuleSpecifier, patchPDFJSSource, p
 export default defineConfig({
   input: {
     'index': 'src/index.mjs',
+    'image-decoders': 'src/image-decoders.mjs',
     'pdfjs-decoders': 'src/decoders/default.mjs',
     'pdfjs-decoders-workerd': 'src/decoders/workerd.mjs',
   },
   external: [decodersModuleSpecifier],
-  // The root `"sideEffects": false` applies to the sources read here too, which
-  // would drop the mock and polyfill modules whose only job is to mutate
-  // globals. Only an explicit rule outranks the manifest – a blanket
-  // `moduleSideEffects: true` does not.
+  // The root `"sideEffects"` field marks the sources read here side-effect-free
+  // too, which would drop the modules whose only job is to mutate globals. Only
+  // an explicit rule outranks the manifest – a blanket `moduleSideEffects: true`
+  // does not.
   treeshake: {
     moduleSideEffects: [
-      { test: /[\\/]src[\\/](mocks|polyfills)\.mjs$/, sideEffects: true },
+      { test: /[\\/]src[\\/](mocks|polyfills|image-decoders)\.mjs$/, sideEffects: true },
     ],
   },
   moduleTypes: {

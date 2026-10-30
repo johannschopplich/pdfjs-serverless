@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { getDocument } from '../dist/index.mjs'
 import imageDecodersPdf from './fixtures/image-decoders.pdf?bytes'
 import samplePdf from './fixtures/sample.pdf?bytes'
+// eslint-disable-next-line antfu/no-import-dist
+import '../dist/image-decoders.mjs'
 
 describe('pdfjs-serverless', () => {
   it('loads and parses a PDF', async () => {

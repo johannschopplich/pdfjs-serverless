@@ -2,7 +2,7 @@
 
 A redistribution of Mozilla's [PDF.js](https://github.com/mozilla/pdf.js) as a bundle for edge and serverless runtimes, like Cloudflare Workers. Use it as a drop-in replacement for `pdfjs-dist` to parse PDF documents and extract text content – no extra dependencies needed.
 
-The main bundle is about 1.7 MB (minified), loads the image decoders on demand, ships the complete PDF.js type declarations, and is tested in Node.js 24+, Bun, and Cloudflare Workers.
+The main bundle is about 1.7 MB (minified) and leaves the image decoders to an [opt-in import](#decoding-ccitt-jbig2-and-jpeg-2000-images). It ships the complete PDF.js type declarations and is tested in Node.js 24+, Bun, and Cloudflare Workers.
 
 ## Installation
 
@@ -61,6 +61,7 @@ Rendering needs a canvas implementation, which serverless runtimes like Cloudfla
 import { writeFile } from 'node:fs/promises'
 import * as canvas from '@napi-rs/canvas'
 import { getDocument } from 'pdfjs-serverless'
+import 'pdfjs-serverless/image-decoders'
 
 globalThis[Symbol.for('pdfjs-serverless.canvasModule')] = canvas
 globalThis.Path2D ??= canvas.Path2D
@@ -76,6 +77,16 @@ await writeFile('page-1.png', await target.encode('png'))
 
 Without a canvas module, rendering throws a descriptive error.
 
+### Decoding CCITT, JBIG2, and JPEG 2000 Images
+
+Rendering a page or reading its image data needs PDF.js' JBIG2 and OpenJPEG decoders for images in these formats. Text extraction doesn't, so your bundle leaves them out unless you import them once:
+
+```ts
+import 'pdfjs-serverless/image-decoders'
+```
+
+The decoders then load on the first such image. Without the import, PDF.js skips these images and warns that the import is missing.
+
 ## How It Works
 
 > [!NOTE]
@@ -85,7 +96,7 @@ Heart and soul of this package is the [`rolldown.config.ts`](./rolldown.config.t
 
 - **String replacements** rewrite the environment detection: `isNodeJS` becomes `typeof window === "undefined"`, so serverless runtimes take the Node.js code paths – paradoxical, but it unlocks the right branches. The `@napi-rs/canvas` import is bridged to a global symbol (see [Rendering Pages](#rendering-pages)).
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
-- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks, so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. Where the runtime can't compile WASM, as in Cloudflare Workers, the bundle turns `useWasm` off and the JS decoders take over. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks.
+- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks behind [`pdfjs-serverless/image-decoders`](#decoding-ccitt-jbig2-and-jpeg-2000-images), so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. Where the runtime can't compile WASM, as in Cloudflare Workers, the bundle turns `useWasm` off and the JS decoders take over. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks.
 - **Mocks and polyfills** provide missing globals: `DOMMatrix`, `navigator` and `FinalizationRegistry` are stubbed in [`src/mocks.mjs`](./src/mocks.mjs); `Promise.try`, `Map.prototype.getOrInsert`, `Uint8Array.prototype.toHex` and friends are polyfilled in [`src/polyfills.mjs`](./src/polyfills.mjs).
 
 ## Inspiration
