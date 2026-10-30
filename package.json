@@ -1,7 +1,7 @@
 {
   "name": "pdfjs-serverless",
   "type": "module",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "packageManager": "pnpm@12.14.0",
   "description": "PDF.js redistributed as a bundle for edge and serverless runtimes",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
