@@ -26,7 +26,9 @@
     "text-extraction",
     "workers"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "./dist/image-decoders.mjs"
+  ],
   "imports": {
     "#pdfjs-decoders": {
       "workerd": "./dist/pdfjs-decoders-workerd.mjs",
@@ -37,6 +39,10 @@
     ".": {
       "types": "./dist/index.d.mts",
       "default": "./dist/index.mjs"
+    },
+    "./image-decoders": {
+      "types": "./dist/image-decoders.d.mts",
+      "default": "./dist/image-decoders.mjs"
     }
   },
   "types": "./dist/index.d.mts",
