@@ -19,6 +19,9 @@ new Proxy({}, {
 })
 `.trim()
 
+// Rendering instantiates `DOMMatrix` and `Path2D`, which serverless runtimes lack.
+const canvasModuleConstructor = (name: string) => `(globalThis[Symbol.for("pdfjs-serverless.canvasModule")]?.${name} ?? ${name})`
+
 // Resolved through the `imports` field of `package.json`, so the consumer's
 // bundler or runtime picks the decoder variant by condition.
 export const decodersModuleSpecifier = '#pdfjs-decoders'
@@ -53,6 +56,9 @@ const patches: Record<string, string> = {
   // compiles the smallest valid module: the magic number and version 1.
   'const useWasm = src.useWasm !== false;': 'const useWasm = src.useWasm !== false && (() => { try { new WebAssembly.Module(new Uint8Array([0x00, 0x61, 0x73, 0x6D, 0x01, 0x00, 0x00, 0x00])); return true } catch { return false } })();',
   'require("@napi-rs/canvas")': canvasMock,
+  'new DOMMatrix(': `new ${canvasModuleConstructor('DOMMatrix')}(`,
+  'new Path2D(': `new ${canvasModuleConstructor('Path2D')}(`,
+  'instanceof Path2D': `instanceof ${canvasModuleConstructor('Path2D')}`,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
 

@@ -63,6 +63,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^9.5.1",
     "@cloudflare/vitest-plugin": "^1.4.3",
+    "@napi-rs/canvas": "^1.1.1",
     "@types/node": "^26.6.5",
     "bumpp": "^12.3.0",
     "eslint": "^10.12.0",

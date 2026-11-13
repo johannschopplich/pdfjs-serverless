@@ -57,7 +57,7 @@ A ready-to-run Cloudflare Workers example lives in [`examples/cloudflare`](./exa
 
 ### Render Pages
 
-Rendering needs a canvas implementation, which serverless runtimes like Cloudflare Workers lack. In Node.js, hand [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) to the bundle through a well-known global symbol and expose its `DOMMatrix` and `Path2D`:
+Rendering needs a canvas implementation, which serverless runtimes like Cloudflare Workers lack. In Node.js, hand [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) to the bundle through a well-known global symbol:
 
 ```ts
 import { readFile, writeFile } from 'node:fs/promises'
@@ -65,10 +65,7 @@ import * as canvas from '@napi-rs/canvas'
 import { getDocument } from 'pdfjs-serverless'
 import 'pdfjs-serverless/image-decoders'
 
-const globals = globalThis as Record<PropertyKey, unknown>
-globals[Symbol.for('pdfjs-serverless.canvasModule')] = canvas
-globals.DOMMatrix = canvas.DOMMatrix // Replaces the bundle's stub, so not `??=`
-globals.Path2D ??= canvas.Path2D
+(globalThis as Record<PropertyKey, unknown>)[Symbol.for('pdfjs-serverless.canvasModule')] = canvas
 
 const data = new Uint8Array(await readFile('document.pdf'))
 const document = await getDocument({ data }).promise

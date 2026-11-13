@@ -1,7 +1,7 @@
 import type { Plugin } from 'vitest/config'
 import * as fsp from 'node:fs/promises'
 import { cloudflareTest } from '@cloudflare/vitest-plugin'
-import { defineConfig } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -25,6 +25,8 @@ export default defineConfig({
         test: {
           name: 'workerd',
           setupFiles: ['./test/setup.ts'],
+          // Rendering needs `@napi-rs/canvas`, a native addon workerd can't load.
+          exclude: [...configDefaults.exclude, 'test/render.test.ts'],
         },
       },
     ],
