@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 // eslint-disable-next-line antfu/no-import-dist
-import { getDocument } from '../dist/index.mjs'
+import { getDocument, SignatureExtractor } from '../dist/index.mjs'
 import imageDecodersPdf from './fixtures/image-decoders.pdf?bytes'
 import samplePdf from './fixtures/sample.pdf?bytes'
 // eslint-disable-next-line antfu/no-import-dist
@@ -32,6 +32,13 @@ describe('pdfjs-serverless', () => {
       // RGBA: red, blue.
       { width: 2, height: 1, data: [255, 0, 0, 255, 0, 0, 255, 255] },
     ])
+  })
+
+  it('decompressSignature restores the outlines compressSignature encoded', async () => {
+    const signature = { outlines: [new Float32Array([0, 0, 10, 5, 20, 0])], areContours: false, thickness: 2, width: 30, height: 10 }
+    const compressedSignature = await SignatureExtractor.compressSignature(signature)
+
+    expect(await SignatureExtractor.decompressSignature(compressedSignature)).toEqual(signature)
   })
 
   it.runIf(globalThis.navigator?.userAgent === 'Cloudflare-Workers')('leaves jbig2.wasm and openjpeg.wasm out of #pdfjs-decoders under the workerd condition', async () => {
