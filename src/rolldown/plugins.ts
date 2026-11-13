@@ -167,7 +167,7 @@ export function pdfjsTypes(): Plugin {
 import * as PDFJS from './types/src/pdf.js'
 
 /**
- * @deprecated Import from \`pdfjs-serverless\` instead. Will be removed in v2.
+ * @deprecated Import from \`pdfjs-serverless\` instead. Will be removed in the next major version.
  * @example
  * import { getDocument } from 'pdfjs-serverless'
  *
