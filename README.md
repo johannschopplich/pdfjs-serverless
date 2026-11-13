@@ -112,12 +112,12 @@ const document = await getDocument({
 > [!NOTE]
 > `pdfjs-serverless` is built from PDF.js v6.4.299. It requires the global `Iterator` constructor (Safari 18.4+); without it, importing the bundle throws.
 
-Heart and soul of this package is the [`rolldown.config.ts`](./rolldown.config.ts) file. It uses [Rolldown](https://rolldown.rs/) to bundle PDF.js for serverless environments. The key techniques:
+[Rolldown](https://rolldown.rs/) bundles PDF.js for serverless runtimes with these changes:
 
-- **String replacements** in [`src/rolldown/plugins.ts`](./src/rolldown/plugins.ts) rewrite the environment detection: `isNodeJS` becomes `typeof window === "undefined"`, so serverless runtimes take the Node.js code paths – paradoxical, but it unlocks the right branches. The `@napi-rs/canvas` import is bridged to a global symbol (see [Render Pages](#render-pages)).
+- **Environment detection** is rewritten so that every runtime without a `window` takes PDF.js' Node.js code paths.
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
-- **Bundled image decoders** ship PDF.js' JBIG2 and OpenJPEG decoders, WASM and JS fallback, as lazy chunks behind [`pdfjs-serverless/image-decoders`](#decode-ccitt-jbig2-and-jpeg-2000-images), so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. Where the runtime can't compile WASM, as in Cloudflare Workers, the bundle turns `useWasm` off and the JS decoders take over. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks.
-- **Mocks and polyfills** provide missing globals: `DOMMatrix`, `navigator` and `FinalizationRegistry` are stubbed in [`src/mocks.mjs`](./src/mocks.mjs); `Promise.try`, `Map.prototype.getOrInsert`, `Uint8Array.prototype.toHex` and friends are polyfilled in [`src/polyfills.mjs`](./src/polyfills.mjs).
+- **Image decoders**, WASM and JS fallback, ship as lazy chunks behind [`pdfjs-serverless/image-decoders`](#decode-ccitt-jbig2-and-jpeg-2000-images), so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. Where the runtime can't compile WASM, as in Cloudflare Workers, the bundle turns `useWasm` off and the JS decoders take over. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks.
+- **Mocks and polyfills** fill in the globals a runtime lacks: stubs for `DOMMatrix`, `navigator`, and `FinalizationRegistry`, and polyfills for newer built-ins such as `Promise.try` and `Map.prototype.getOrInsert`.
 
 ## Inspiration
 
