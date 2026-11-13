@@ -114,7 +114,7 @@ const document = await getDocument({
 - **Environment detection** is rewritten so that every runtime without a `window` takes PDF.js' Node.js code paths.
 - **Worker inlining** embeds the PDF.js worker directly into the main bundle, since serverless runtimes can't load separate worker files.
 - **Image decoders**, WASM and JS fallback, ship as lazy chunks behind [`pdfjs-serverless/image-decoders`](#decode-ccitt-jbig2-and-jpeg-2000-images), so CCITT, JBIG2, and JPEG 2000 images decode without `pdfjs-dist` or a `wasmUrl`. Where the runtime can't compile WASM, as in Cloudflare Workers, the bundle turns `useWasm` off and the JS decoders take over. Bundlers that resolve the `workerd` condition, like Wrangler, ship only the JS fallbacks.
-- **Mocks and polyfills** fill in the globals a runtime lacks: stubs for `DOMMatrix`, `navigator`, and `FinalizationRegistry`, and polyfills for newer built-ins such as `Promise.try` and `Map.prototype.getOrInsert`.
+- **Mocks and polyfills** fill in the globals a runtime lacks: stubs for `navigator` and `FinalizationRegistry`, and polyfills for newer built-ins such as `Promise.try` and `Map.prototype.getOrInsert`.
 
 ## Inspiration
 
