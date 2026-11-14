@@ -43,14 +43,14 @@ const patches: Record<string, string> = {
   // Load the image decoders and their JS fallbacks through the registered
   // loader instead of `wasmUrl`.
   /* eslint-disable no-template-curly-in-string -- The anchors match template literals in the PDF.js source. */
-  'if (WasmImage.#useWorkerFetch) {\n          this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n        } else {\n          this.#buffer = await WasmImage.#handler.sendWithPromise("FetchBinaryData", {\n            kind: "wasmUrl",\n            filename: this._filename\n          });\n        }': `this.#buffer = await ${loadImageDecoder}(this._filename);`,
-  'await import(\n      /*webpackIgnore: true*/\n      /*@vite-ignore*/\n      `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await ${loadImageDecoder}(this._noWasmFilename) }`,
+  'if (WasmImage.#useWorkerFetch) {\n        this.#buffer = await fetchBinaryData(`${WasmImage.#wasmUrl}${this._filename}`);\n      } else {\n        this.#buffer = await WasmImage.#getHandler().sendWithPromise("FetchBinaryData", {\n          kind: "wasmUrl",\n          filename: this._filename\n        });\n      }': `this.#buffer = await ${loadImageDecoder}(this._filename);`,
+  'await import(\n    /*webpackIgnore: true*/\n    /*@vite-ignore*/\n    `${WasmImage.#wasmUrl}${this._noWasmFilename}`)': `{ default: await ${loadImageDecoder}(this._noWasmFilename) }`,
   /* eslint-enable no-template-curly-in-string */
   // Forget a decoder that failed to load while no loader was registered at the
   // attempt's start, so images decoded after registration don't wait for the
   // next `cleanup` to get it. A newer module promise, or a failure from a loader
   // registered before the attempt, stays cached.
-  'this.#modulePromise = Promise.race(promises);': `{ const hasLoader = Boolean(globalThis[Symbol.for("pdfjs-serverless.loadImageDecoder")]); const modulePromise = Promise.race(promises).then(module => { if (!module && !hasLoader && this.#modulePromise === modulePromise) this.#modulePromise = null; return module; }); this.#modulePromise = modulePromise; }`,
+  'this.#modulePromise = Promise.race([promise, ImageDecoder({\n        warn: warn,\n        instantiateWasm: this.#instantiateWasm.bind(this, resolve)\n      })]);': `{ const hasLoader = Boolean(globalThis[Symbol.for("pdfjs-serverless.loadImageDecoder")]); const modulePromise = Promise.race([promise, ImageDecoder({ warn, instantiateWasm: this.#instantiateWasm.bind(this, resolve) })]).then(module => { if (!module && !hasLoader && this.#modulePromise === modulePromise) this.#modulePromise = null; return module; }); this.#modulePromise = modulePromise; }`,
   // Where the runtime forbids compiling WASM, as workerd does, PDF.js would warn
   // once per image decoder before falling back to its JS decoders. The probe
   // compiles the smallest valid module: the magic number and version 1.
@@ -58,7 +58,6 @@ const patches: Record<string, string> = {
   'require("@napi-rs/canvas")': canvasMock,
   'new DOMMatrix(': `new ${canvasModuleConstructor('DOMMatrix')}(`,
   'new Path2D(': `new ${canvasModuleConstructor('Path2D')}(`,
-  'instanceof Path2D': `instanceof ${canvasModuleConstructor('Path2D')}`,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
 }
 

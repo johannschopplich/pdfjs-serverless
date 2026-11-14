@@ -101,7 +101,7 @@ The bundle ships neither the CMaps nor the standard fonts of PDF.js. Without CMa
 ```ts
 const document = await getDocument({
   data,
-  cMapUrl: 'https://unpkg.com/pdfjs-dist@6.4.299/cmaps/',
+  cMapUrl: 'https://unpkg.com/pdfjs-dist@6.5.438/cmaps/',
   cMapPacked: true,
   useWorkerFetch: true,
 }).promise
@@ -112,7 +112,7 @@ const document = await getDocument({
 ## How It Works
 
 > [!NOTE]
-> `pdfjs-serverless` is built from PDF.js v6.4.299. It requires the global `Iterator` constructor (Safari 18.4+); without it, importing the bundle throws.
+> `pdfjs-serverless` is built from PDF.js v6.5.438. It requires the global `Iterator` constructor (Safari 18.4+); without it, importing the bundle throws.
 
 [Rolldown](https://rolldown.rs/) bundles PDF.js for serverless runtimes with these changes:
 

@@ -67,7 +67,7 @@
     "@types/node": "^26.6.6",
     "bumpp": "^12.3.0",
     "eslint": "^10.14.0",
-    "pdfjs-dist": "~6.4.299",
+    "pdfjs-dist": "~6.5.438",
     "rolldown": "^1.3.2",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0"
