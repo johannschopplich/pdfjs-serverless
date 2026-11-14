@@ -22,7 +22,9 @@ describe('pdfjs-serverless', () => {
 })
 
 async function decodeImages(): Promise<any[]> {
-  const doc = await getDocument({ data: imageDecodersPdf.slice() }).promise
+  const doc = await getDocument({
+    data: imageDecodersPdf.slice(),
+  }).promise
   const page = await doc.getPage(1)
   await page.getOperatorList()
 

@@ -43,7 +43,12 @@ export default {
     for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber++) {
       const page = await document.getPage(pageNumber)
       const { items } = await page.getTextContent()
-      pages.push({ pageNumber, content: items.map(item => 'str' in item ? item.str : '').join(' ') })
+      pages.push({
+        pageNumber,
+        content: items.map(item => 'str' in item
+          ? item.str
+          : '').join(' ')
+      })
     }
 
     return Response.json({ metadata: await document.getMetadata(), pages })

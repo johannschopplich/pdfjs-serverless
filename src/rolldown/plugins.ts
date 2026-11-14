@@ -89,7 +89,9 @@ export function patchPDFJSSource(): Plugin {
         hasChanged = true
       }
 
-      return hasChanged ? { code: patched, map: null } : null
+      return hasChanged
+        ? { code: patched, map: null }
+        : null
     },
     buildEnd() {
       const missedAnchors = [...hitCounts]

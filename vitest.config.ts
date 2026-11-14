@@ -7,7 +7,9 @@ export default defineConfig({
   test: {
     projects: [
       {
-        plugins: [inlineBytes()],
+        plugins: [
+          inlineBytes(),
+        ],
         test: {
           name: 'node',
           setupFiles: ['./test/setup.ts'],

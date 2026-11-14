@@ -26,16 +26,45 @@ describe('pdfjs-serverless', () => {
     )
 
     expect(consoleWarnSpy).not.toHaveBeenCalled()
-    expect(images.map(({ width, height, data }) => ({ width, height, data: Array.from(data) }))).toEqual([
+    expect(images.map(({ width, height, data }) => ({
+      width,
+      height,
+      data: Array.from(data),
+    }))).toEqual([
       // One bit per pixel: black on the left in the top two rows, on the right in the bottom two.
-      { width: 16, height: 4, data: [0x00, 0xFF, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0x00] },
+      {
+        width: 16,
+        height: 4,
+        data: [
+          0x00,
+          0xFF,
+          0x00,
+          0xFF,
+          0xFF,
+          0x00,
+          0xFF,
+          0x00,
+        ],
+      },
       // RGBA: red, blue.
-      { width: 2, height: 1, data: [255, 0, 0, 255, 0, 0, 255, 255] },
+      {
+        width: 2,
+        height: 1,
+        data: [255, 0, 0, 255, 0, 0, 255, 255],
+      },
     ])
   })
 
   it('decompressSignature restores the outlines compressSignature encoded', async () => {
-    const signature = { outlines: [new Float32Array([0, 0, 10, 5, 20, 0])], areContours: false, thickness: 2, width: 30, height: 10 }
+    const signature = {
+      outlines: [
+        new Float32Array([0, 0, 10, 5, 20, 0]),
+      ],
+      areContours: false,
+      thickness: 2,
+      width: 30,
+      height: 10,
+    }
     const compressedSignature = await SignatureExtractor.compressSignature(signature)
 
     expect(await SignatureExtractor.decompressSignature(compressedSignature)).toEqual(signature)
