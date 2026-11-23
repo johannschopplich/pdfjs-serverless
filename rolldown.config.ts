@@ -1,5 +1,5 @@
 import { defineConfig } from 'rolldown'
-import { assertRuntimePatchesFirst, decodersModuleSpecifier, patchPDFJSSource, pdfjsTypes } from './src/rolldown/plugins'
+import { assertRuntimePatchesFirst, decodersModuleSpecifier, patchPDFJSSource, pdfjsTypes, routeToPonyfills } from './src/rolldown/plugins'
 
 export default defineConfig({
   input: {
@@ -44,6 +44,7 @@ export default defineConfig({
   },
   plugins: [
     patchPDFJSSource(),
+    routeToPonyfills(),
     assertRuntimePatchesFirst(),
     pdfjsTypes(),
   ],

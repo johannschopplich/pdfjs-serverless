@@ -1,5 +1,6 @@
 import type { OutputBundle, OutputChunk, Plugin } from 'rolldown'
 import { cp, readdir, readFile, writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 
 // PDF.js' built-in `NodeCanvasFactory` requires `@napi-rs/canvas`, which is
 // not available in serverless environments. Bridge the require to a module
@@ -59,7 +60,28 @@ const patches: Record<string, string> = {
   'new DOMMatrix(': `new ${canvasModuleConstructor('DOMMatrix')}(`,
   'new Path2D(': `new ${canvasModuleConstructor('Path2D')}(`,
   'warn("Please use the `legacy` build in Node.js environments.")': '',
+  // Route the `Uint8Array` method calls to the ponyfills `routeToPonyfills` injects.
+  'data.toBase64()': 'pdfjsServerlessToBase64(data)',
+  'bytes.toBase64()': 'pdfjsServerlessToBase64(bytes)',
+  '[hashOriginal.toHex(), hashModified?.toHex() ?? null]': '[pdfjsServerlessToHex(hashOriginal), hashModified ? pdfjsServerlessToHex(hashModified) : null]',
 }
+
+const ponyfillsPath = fileURLToPath(new URL('../ponyfills.mjs', import.meta.url))
+
+const ponyfillInjections: Record<string, [string, string]> = {
+  'Math.sumPrecise': [ponyfillsPath, 'sumPrecise'],
+  'Uint8Array.fromBase64': [ponyfillsPath, 'fromBase64'],
+  'pdfjsServerlessToBase64': [ponyfillsPath, 'toBase64'],
+  'pdfjsServerlessToHex': [ponyfillsPath, 'toHex'],
+}
+
+const ponyfilledStatics = Object.keys(ponyfillInjections)
+  .filter(key => key.includes('.'))
+  .map(key => key.replaceAll('.', '\\.'))
+const ponyfilledMethods = Object.entries(ponyfillInjections)
+  .filter(([key]) => !key.includes('.'))
+  .map(([, [, exportName]]) => exportName)
+const UNROUTED_BUILTIN_PATTERN = new RegExp(`\\.(${ponyfilledMethods.join('|')})\\b|\\b(${ponyfilledStatics.join('|')})\\b`)
 
 /**
  * Applies the PDF.js source patches as raw literal substitutions and asserts
@@ -103,6 +125,45 @@ export function patchPDFJSSource(): Plugin {
           + `so the PDF.js source has likely drifted:\n${
             missedAnchors.map(anchor => `  - ${JSON.stringify(anchor)}`).join('\n')}`,
         )
+      }
+    },
+  }
+}
+
+/**
+ * Points PDF.js' calls to built-ins that not every runtime has at the
+ * ponyfills in `ponyfills.mjs`. Static members are injected wherever they
+ * appear, method calls are rewritten by the source patches, and a leftover
+ * member access fails the build.
+ */
+export function routeToPonyfills(): Plugin {
+  return {
+    name: 'pdfjs-serverless:route-to-ponyfills',
+    options(inputOptions) {
+      return {
+        ...inputOptions,
+        transform: {
+          ...inputOptions.transform,
+          inject: {
+            ...inputOptions.transform?.inject,
+            ...ponyfillInjections,
+          },
+        },
+      }
+    },
+    generateBundle(_options, bundle) {
+      for (const output of Object.values(bundle)) {
+        if (output.type !== 'chunk')
+          continue
+
+        const match = UNROUTED_BUILTIN_PATTERN.exec(output.code)
+        if (match) {
+          const excerpt = output.code.slice(Math.max(0, match.index - 80), match.index + 80)
+          throw new Error(
+            `[pdfjs-serverless] ${output.fileName} still references \`${match[1] ?? match[2]}\`, so PDF.js has `
+            + `likely added a call site no patch or injection routes to \`ponyfills.mjs\`:\n  ${excerpt}`,
+          )
+        }
       }
     },
   }
